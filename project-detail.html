@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>项目详情 - 川锅大屏</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <style>
         :root {
@@ -1236,6 +1237,110 @@
             height: 100%;
             overflow: hidden;
         }
+
+        /* =========================================
+           供应链 Tab 样式 (Supply Chain Tab Styles)
+           ========================================= */
+        .supplier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.2fr; /* 右侧稍微宽一点 */
+            gap: 25px;
+            padding: 0 25px 25px 25px;
+            flex: 1; /* 弹性高度 */
+            height: auto; /* 允许根据内容或父容器伸缩 */
+            min-height: 0; /* 防止 grid 溢出 */
+        }
+
+        .supplier-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            height: 100%; /* 填满 grid 行高 */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        .sub-tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+        .sub-tab-item {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 8px 0;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .sub-tab-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .sub-tab-item.active {
+            background: var(--primary-red);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .supplier-map-box {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 复用表格样式但做微调 */
+        .supplier-table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+        }
+        
+        .supplier-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px; /* 稍微调小字体以适应更多列 */
+        }
+
+        .supplier-table th, .supplier-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .supplier-table th {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: normal;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .supplier-table td {
+            background: rgba(0, 0, 0, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .supplier-table tr:hover td {
+            background: rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 <body>
@@ -1372,7 +1477,7 @@
 
                         <div class="diagram-container">
                             <div class="diagram-main">
-                                <img id="img_diagram" src="https://minio-api.cgboiler.com/form-test/1770284658201_download.jpg" class="real-img" style="display: block;">
+                                <img id="img_diagram" src="https://minio-api.cgboiler.com/form-test/group%201.png" class="real-img" style="display: block;">
                             </div>
                             <div class="certificate-box">
                                 <img id="img_cert" src="https://minio-api.cgboiler.com/abi/A%E5%85%AC%E5%8F%B8%E4%BB%8B%E7%BB%8D/A010%E8%AF%81%E4%B9%A6/%E9%AB%98%E6%B8%A9%E5%9B%BA%E4%BD%93%E6%95%A3%E6%96%99%E4%BD%99%E7%83%AD%E7%9B%B4%E6%8E%A5%E5%9B%9E%E6%94%B6%E6%8A%80%E6%9C%AF%E5%BC%80%E5%8F%91%E4%B8%8E%E5%BA%94%E7%94%A8-%E5%86%B6%E9%87%91%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E4%BA%8C%E7%AD%89%E5%A5%96(1).jpg" class="real-img" style="display: block;">
@@ -1750,6 +1855,79 @@
                         <div class="viewer-display">
                             <img id="drawingPreviewImg" src="https://minio-api.cgboiler.com/form-test/%E5%9B%BE%E7%89%871.png" alt="Drawing Preview">
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 供应链内容 -->
+        <div id="supplierPane" class="tab-pane">
+            <div class="supplier-grid">
+                <!-- 左侧：地图分布 -->
+                <div class="supplier-panel">
+                    <div class="section-title">供应商分布</div>
+                    <div class="supplier-map-box" id="supplierMap">
+                        <!-- 地图容器，后续集成 ECharts -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); text-align: center;">
+                            <div style="font-size: 40px; margin-bottom: 10px;">🗺️</div>
+                            <div>Map Visualization Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中间：供应商列表 -->
+                <div class="supplier-panel">
+                    <div class="section-title">供应商列表</div>
+                    <div class="sub-tabs-nav" id="supplierListTabs">
+                        <div class="sub-tab-item active" data-type="subcontract">分包</div>
+                        <div class="sub-tab-item" data-type="metal">金属</div>
+                        <div class="sub-tab-item" data-type="accessory">辅料</div>
+                        <div class="sub-tab-item" data-type="matching">配套</div>
+                    </div>
+                    <div class="supplier-table-container">
+                        <table class="supplier-table" id="supplierListTable">
+                            <thead>
+                                <tr>
+                                    <th>供应商名称</th>
+                                    <th>供应类型</th>
+                                    <th>所在地区</th>
+                                    <th>评级</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 右侧：合同列表 -->
+                <div class="supplier-panel">
+                    <div class="section-title">合同执行详情</div>
+                    <div class="supplier-table-container">
+                        <table class="supplier-table" id="contractListTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>项目名称</th>
+                                    <th>令号</th>
+                                    <th>供应商名称</th>
+                                    <th>合同编号</th>
+                                    <th>签订时间</th>
+                                    <th>计划交付</th>
+                                    <th>实际交付</th>
+                                    <th>分包组件</th>
+                                    <th>类别</th>
+                                    <th>重量(t)</th>
+                                    <th>发货重量(t)</th>
+                                    <th>未发货(t)</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- 动态生成 -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -2298,6 +2476,7 @@
             const tabPanes = {
                 '概要': document.getElementById('overviewPane'),
                 '设计': document.getElementById('designPane'),
+                '供应商': document.getElementById('supplierPane'),
                 '生产': document.getElementById('productionPane'),
                 '物流': document.getElementById('logisticsPane'),
                 '质量': document.getElementById('qualityPane'),
@@ -2323,9 +2502,265 @@
                         initDrawingViewer();
                     } else if (tabName === '质量') {
                         initQualityFiles();
+                    } else if (tabName === '供应商') {
+                        initSupplierData();
                     }
                 });
             });
+
+            // 初始化供应商数据
+            function initSupplierData() {
+                // 防止重复初始化
+                if (document.getElementById('supplierListTable').querySelector('tbody').children.length > 0) return;
+
+                const suppliers = {
+                    'subcontract': [
+                        { name: '四川宏业建设有限公司', type: '劳务分包', region: '四川成都', rating: 'AAAA', status: '正常' },
+                        { name: '成都建工第三建筑工程公司', type: '工程分包', region: '四川成都', rating: 'AAAAA', status: '正常' },
+                        { name: '重庆路桥股份有限公司', type: '路桥分包', region: '重庆', rating: 'AAA', status: '预警' },
+                        { name: '四川华西集团', type: '土建分包', region: '四川成都', rating: 'AAAA', status: '正常' }
+                    ],
+                    'metal': [
+                        { name: '宝钢集团', type: '钢材供应', region: '上海', rating: 'AAAAA', status: '正常' },
+                        { name: '攀钢集团', type: '钢材供应', region: '四川攀枝花', rating: 'AAAA', status: '正常' },
+                        { name: '太钢不锈', type: '特种钢材', region: '山西太原', rating: 'AAAA', status: '正常' }
+                    ],
+                    'accessory': [
+                        { name: '东方电气', type: '发电机配件', region: '四川德阳', rating: 'AAAAA', status: '正常' },
+                        { name: '上海电气', type: '汽轮机配件', region: '上海', rating: 'AAAA', status: '正常' }
+                    ],
+                    'matching': [
+                        { name: '华为技术有限公司', type: '智能化配套', region: '广东深圳', rating: 'AAAAA', status: '正常' },
+                        { name: '西门子(中国)', type: '自动化控制', region: '北京', rating: 'AAAAA', status: '正常' }
+                    ]
+                };
+
+                const contracts = [
+                    { id: 1, project: '耿弘信润', order: '1310002', supplier: '成都天一机械有限公司', contract: '2024-354(补)', signDate: '2024-11-06', planDate: '2024-11-10', actDate: '--', component: '大风箱及桁架', category: '其他', weight: '14.519', shipped: '14.498', unshipped: '0.021', op: '详情' },
+                    { id: 2, project: '济源天龙', order: '410482', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-333(补)', signDate: '2024-11-01', planDate: '2024-12-31', actDate: '--', component: '钢结构', category: '钢结构', weight: '67.279', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 3, project: '新疆天池', order: '1240036', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                    { id: 4, project: '新疆天池', order: '1240037', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                    { id: 5, project: '新疆天池', order: '1240038', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                    { id: 6, project: '新疆天池', order: '1240039', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                    { id: 7, project: '济源天龙', order: '410482', supplier: '烟台百信钢结构股份有限公司', contract: '2024-334(补)', signDate: '2024-11-01', planDate: '2024-11-30', actDate: '--', component: '钢格板、扶梯', category: '钢格板', weight: '41.392', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 8, project: '济源天龙', order: '410482', supplier: '山东博宇重工科技集团有限公司', contract: '2024-342(补)', signDate: '2024-10-31', planDate: '2025-01-10', actDate: '--', component: '空预器管箱', category: '空预器', weight: '102.063', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 9, project: '广西华昇', order: '2024276', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-339(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置配件', category: '固定、密封', weight: '0.254', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 10, project: '耿弘信润', order: '1310002', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 11, project: '耿弘信润', order: '1310003', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 12, project: '广西华昇', order: '2024227', supplier: '扬州荣成机械有限公司', contract: '2024-331(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: '钢板', category: '其他', weight: '0.127', shipped: 'null', unshipped: 'null', op: '详情' },
+                    { id: 13, project: '吉林石化', order: '2024162', supplier: '扬州荣成机械有限公司', contract: '2024-332(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: 'U型螺栓', category: '其他', weight: '0.401', shipped: 'null', unshipped: 'null', op: '详情' }
+                ];
+
+                // 渲染表格函数
+                function renderTable(tableId, data) {
+                    const tbody = document.getElementById(tableId).querySelector('tbody');
+                    tbody.innerHTML = '';
+                    if (!data || data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="14" style="padding: 20px; color: rgba(255,255,255,0.3);">暂无数据</td></tr>';
+                        return;
+                    }
+                    
+                    data.forEach(item => {
+                        const tr = document.createElement('tr');
+                        // 供应商列表逻辑
+                        if (item.rating) {
+                            tr.innerHTML = `
+                                <td>${item.name}</td>
+                                <td>${item.type}</td>
+                                <td>${item.region}</td>
+                                <td><span style="color: #e6a23c">${item.rating}</span></td>
+                                <td><span class="status-badge ${item.status === '正常' ? 'completed' : 'delayed'}">${item.status}</span></td>
+                            `;
+                        } else {
+                            // 合同列表逻辑 - 1:1 还原图片字段
+                            tr.innerHTML = `
+                                <td>${item.id}</td>
+                                <td>${item.project}</td>
+                                <td>${item.order}</td>
+                                <td>${item.supplier}</td>
+                                <td>${item.contract}</td>
+                                <td>${item.signDate}</td>
+                                <td>${item.planDate}</td>
+                                <td>${item.actDate}</td>
+                                <td>${item.component}</td>
+                                <td>${item.category}</td>
+                                <td>${item.weight}</td>
+                                <td>${item.shipped === 'null' ? '<span style="color:#666">-</span>' : item.shipped}</td>
+                                <td>${item.unshipped === 'null' ? '<span style="color:#666">-</span>' : item.unshipped}</td>
+                                <td><span style="color: #409eff; cursor: pointer;">${item.op}</span></td>
+                            `;
+                        }
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                // Tab 切换逻辑
+                function setupTabs(tabContainerId, tableId, dataMap) {
+                    const container = document.getElementById(tabContainerId);
+                    if (!container) return; // 如果找不到容器直接返回 (比如合同列表移除了 Tabs)
+                    
+                    const tabs = container.querySelectorAll('.sub-tab-item');
+                    
+                    tabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            tabs.forEach(t => t.classList.remove('active'));
+                            tab.classList.add('active');
+                            const type = tab.getAttribute('data-type');
+                            renderTable(tableId, dataMap[type]);
+                        });
+                    });
+
+                    // 默认加载第一个 Tab
+                    renderTable(tableId, dataMap['subcontract']);
+                }
+
+                setupTabs('supplierListTabs', 'supplierListTable', suppliers);
+                // 合同列表不再需要 Tabs 切换，直接渲染全部数据
+                renderTable('contractListTable', contracts);
+                
+                // 初始化地图
+                initSupplierMap();
+            }
+            
+            async function initSupplierMap() {
+                const mapContainer = document.getElementById('supplierMap');
+                // 清空占位内容
+                mapContainer.innerHTML = '';
+                
+                const chart = echarts.init(mapContainer);
+                
+                // 获取世界地图 GeoJSON (复用 1-2.html 的资源)
+                try {
+                    const response = await fetch('https://fastly.jsdelivr.net/npm/echarts/map/json/world.json');
+                    const worldJson = await response.json();
+                    echarts.registerMap('world', worldJson);
+                    
+                    // 坐标定义
+                    const geoCoordMap = {
+                        '新疆哈密(项目地)': [93.51, 42.82],
+                        '成都天一': [104.06, 30.67],
+                        '银淇钢结构': [104.60, 31.00], // 中江近似坐标
+                        '烟台百信': [121.44, 37.46],
+                        '山东博宇': [117.02, 36.67], // 济南附近
+                        '川锅科泰达': [104.07, 30.60],
+                        '扬州荣成': [119.41, 32.39]
+                    };
+
+                    const data = [
+                        [{name: '成都天一'}, {name: '新疆哈密(项目地)'}],
+                        [{name: '银淇钢结构'}, {name: '新疆哈密(项目地)'}],
+                        [{name: '烟台百信'}, {name: '新疆哈密(项目地)'}],
+                        [{name: '山东博宇'}, {name: '新疆哈密(项目地)'}],
+                        [{name: '川锅科泰达'}, {name: '新疆哈密(项目地)'}],
+                        [{name: '扬州荣成'}, {name: '新疆哈密(项目地)'}]
+                    ];
+
+                    const convertData = function (data) {
+                        const res = [];
+                        for (let i = 0; i < data.length; i++) {
+                            const dataItem = data[i];
+                            const fromCoord = geoCoordMap[dataItem[0].name];
+                            const toCoord = geoCoordMap[dataItem[1].name];
+                            if (fromCoord && toCoord) {
+                                res.push({
+                                    fromName: dataItem[0].name,
+                                    toName: dataItem[1].name,
+                                    coords: [fromCoord, toCoord]
+                                });
+                            }
+                        }
+                        return res;
+                    };
+
+                    const option = {
+                        backgroundColor: 'transparent',
+                        // 调整地图视口以聚焦中国区域
+                        geo: {
+                            map: 'world',
+                            roam: true,
+                            center: [105, 38], // 中心点设在中国
+                            zoom: 3, // 放大倍数
+                            emphasis: { label: { show: false } },
+                            itemStyle: {
+                                areaColor: 'rgba(0, 40, 80, 0.4)',
+                                borderColor: 'rgba(120, 120, 120, 0.3)',
+                                borderWidth: 1
+                            }
+                        },
+                        series: [
+                            {
+                                name: '供货路线',
+                                type: 'lines',
+                                zlevel: 1,
+                                effect: {
+                                    show: true,
+                                    period: 6,
+                                    trailLength: 0.7,
+                                    color: '#fff',
+                                    symbolSize: 2
+                                },
+                                lineStyle: {
+                                    color: 'rgba(230, 0, 18, 0.4)',
+                                    width: 0,
+                                    curveness: 0.2
+                                },
+                                data: convertData(data)
+                            },
+                            {
+                                name: '流动',
+                                type: 'lines',
+                                zlevel: 2,
+                                effect: {
+                                    show: true,
+                                    period: 6,
+                                    trailLength: 0.2,
+                                    symbol: 'arrow',
+                                    symbolSize: 5
+                                },
+                                lineStyle: {
+                                    color: 'rgba(230, 0, 18, 0.8)',
+                                    width: 1,
+                                    opacity: 0.6,
+                                    curveness: 0.2
+                                },
+                                data: convertData(data)
+                            },
+                            {
+                                name: '供应商',
+                                type: 'effectScatter',
+                                coordinateSystem: 'geo',
+                                zlevel: 3,
+                                rippleEffect: { brushType: 'stroke', scale: 3 },
+                                label: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: '{b}',
+                                    color: 'rgba(255,255,255,0.7)',
+                                    fontSize: 10
+                                },
+                                itemStyle: {
+                                    color: function(params) {
+                                        return params.name === '新疆哈密(项目地)' ? '#e60012' : '#409eff';
+                                    }
+                                },
+                                data: Object.keys(geoCoordMap).map(name => {
+                                    return {
+                                        name: name,
+                                        value: geoCoordMap[name].concat([100])
+                                    };
+                                })
+                            }
+                        ]
+                    };
+
+                    chart.setOption(option);
+                    window.addEventListener('resize', () => chart.resize());
+                    
+                } catch (e) {
+                    console.error('Map loading failed', e);
+                    mapContainer.innerHTML = '<div style="color:#fff;text-align:center;padding-top:50px;">地图加载失败</div>';
+                }
+            }
 
             // 初始化图纸预览器
             function initDrawingViewer() {
