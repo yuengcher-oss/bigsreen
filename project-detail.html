@@ -262,10 +262,46 @@
             box-shadow: 0 0 10px var(--primary-red);
         }
 
-        .project-bg-info {
-            font-size: 24px;
-            line-height: 1.8;
-            color: var(--text-secondary);
+        .project-bg-grid {
+            display: grid;
+            grid-template-columns: 0.8fr 1.2fr;
+            gap: 40px;
+            font-size: 14px;
+            color: #fff;
+            margin-top: 20px;
+        }
+
+        .bg-col {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .bg-row {
+            display: flex;
+            gap: 15px;
+            line-height: 1.6;
+        }
+
+        .bg-label {
+            color: rgba(255, 255, 255, 0.5);
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .bg-value {
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .bg-details p {
+            margin: 0 0 8px 0;
+            color: #ddd;
+        }
+
+        .bg-details span {
+            color: rgba(255, 255, 255, 0.5);
+            margin-right: 5px;
         }
 
         .metrics-card {
@@ -701,9 +737,47 @@
                     <div class="detail-card">
                         <div>
                             <div class="section-title">项目背景</div>
-                            <div class="project-bg-info">
-                                <p>客户名称：新疆慧能煤清洁高效利用有限公司</p>
-                                <p>项目地址：新疆哈密涂毛湖煤矿区</p>
+                            <div class="project-bg-grid">
+                                <!-- 左列：基础信息 -->
+                                <div class="bg-col">
+                                    <div class="bg-row">
+                                        <div class="bg-label">项目编号</div>
+                                        <div class="bg-value">PM0125001563</div>
+                                    </div>
+                                    <div class="bg-row">
+                                        <div class="bg-label">生产令号</div>
+                                        <div class="bg-value">1160012</div>
+                                    </div>
+                                    <div class="bg-row">
+                                        <div class="bg-label">项目经理</div>
+                                        <div class="bg-value">刘宾</div>
+                                    </div>
+                                    <div class="bg-row">
+                                        <div class="bg-label">执行部门</div>
+                                        <div class="bg-value">能源事业部</div>
+                                    </div>
+                                    <div class="bg-row">
+                                        <div class="bg-label">协助部门</div>
+                                        <div class="bg-value">项目管理部</div>
+                                    </div>
+                                </div>
+
+                                <!-- 右列：详细描述 -->
+                                <div class="bg-col">
+                                    <div class="bg-row">
+                                        <div class="bg-label">项目简称</div>
+                                        <div class="bg-value">能源-新疆慧能-热风炉总包</div>
+                                    </div>
+                                    <div class="bg-row">
+                                        <div class="bg-label">项目简介</div>
+                                        <div class="bg-value bg-details">
+                                            <p><span>项目名称：</span>2*95万Nm3/h循环流化床热风炉</p>
+                                            <p><span>业主名称：</span>新疆慧能煤清洁高效利用有限公司</p>
+                                            <p><span>合同范围：</span>2*65t/h余热锅炉本体、耐火材料及施工、烘炉、调试，2*160t/h循环流化床热风炉本体、耐火材料及施工、烘炉、调试</p>
+                                            <p><span>建设地点：</span>新疆哈密市伊吾县白石湖煤炭高效综合利用产业园</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
