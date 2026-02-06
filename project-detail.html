@@ -698,6 +698,226 @@
         .empty-panel {
             background: transparent;
         }
+
+        /* =========================================
+           生产进度 Tab 样式 (Production Tab Styles)
+           ========================================= */
+        
+        .production-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        /* 顶部子分类 Tabs (膜式壁, 蛇形管...) */
+        .prod-category-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .prod-cat-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            cursor: pointer;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .prod-cat-item:last-child {
+            border-right: none;
+        }
+
+        .prod-cat-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .prod-cat-item.active {
+            background: var(--primary-red);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* 头部控制栏 */
+        .prod-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prod-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+        }
+
+        .toggle-btn {
+            width: 44px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-btn::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 2px;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-btn {
+            background: var(--primary-red);
+        }
+
+        .toggle-switch.active .toggle-btn::after {
+            transform: translateX(20px);
+        }
+
+        /* 生产令信息 */
+        .prod-order-info {
+            background: rgba(64, 158, 255, 0.1);
+            border: 1px solid rgba(64, 158, 255, 0.2);
+            padding: 12px 20px;
+            border-radius: 4px;
+            color: #a0cfff;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .prod-order-info .highlight {
+            color: #409eff;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* 表格容器 */
+        .prod-table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+        }
+
+        .prod-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            min-width: 1200px;
+        }
+
+        .prod-table th, .prod-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .prod-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: normal;
+        }
+
+        .prod-table td {
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+        }
+
+        /* 进度卡片样式 */
+        .progress-card {
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            position: relative;
+        }
+
+        .progress-card.green {
+            background: rgba(103, 194, 58, 0.1);
+            border: 1px solid rgba(103, 194, 58, 0.3);
+            color: #67c23a;
+        }
+
+        .progress-card.orange {
+            background: rgba(230, 162, 60, 0.1);
+            border: 1px solid rgba(230, 162, 60, 0.3);
+            color: #e6a23c;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: currentColor; /* 使用父级颜色 */
+            border-radius: 3px;
+        }
+        
+        .progress-val-text {
+            font-family: var(--font-digit);
+            font-weight: bold;
+        }
+
+        /* 底部图例 */
+        .prod-legend {
+            display: flex;
+            gap: 20px;
+            padding-top: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
     </style>
 </head>
 <body>
@@ -951,6 +1171,209 @@
                 </div>
             </div>
         </div>
+        <!-- 生产内容 -->
+        <div id="productionPane" class="tab-pane">
+            <div class="production-panel">
+                <!-- 顶部子分类 -->
+                <div class="prod-category-tabs">
+                    <div class="prod-cat-item active">膜式壁</div>
+                    <div class="prod-cat-item">蛇形管</div>
+                    <div class="prod-cat-item">集箱</div>
+                    <div class="prod-cat-item">锅筒</div>
+                    <div class="prod-cat-item">高加</div>
+                </div>
+
+                <!-- 头部控制 -->
+                <div class="prod-header">
+                    <div class="section-title">工序进度详情</div>
+                    <div class="prod-controls">
+                        <div class="toggle-switch">
+                            <div class="toggle-btn"></div>
+                            详细信息
+                        </div>
+                        <div class="toggle-switch active">
+                            <div class="toggle-btn"></div>
+                            已完工
+                        </div>
+                        <div class="toggle-switch">
+                            <div class="toggle-btn"></div>
+                            仅看异常
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 生产令号 -->
+                <div class="prod-order-info">
+                    <i style="font-style: normal">📄</i> 生产令号: 1160013 <span class="highlight">新疆慧能</span>
+                </div>
+
+                <!-- 数据表格 -->
+                <div class="prod-table-container">
+                    <table class="prod-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2" style="width: 120px;">组件号</th>
+                                <th rowspan="2" style="width: 150px;">名称</th>
+                                <th rowspan="2" style="width: 120px;">计划完工日期</th>
+                                <th colspan="1">主体材料</th>
+                                <th colspan="1">自动焊</th>
+                                <th colspan="1">装焊</th>
+                                <th colspan="1">完工</th>
+                            </tr>
+                            <tr>
+                                <th>累计完成/定额数量</th>
+                                <th>累计完成/定额数量</th>
+                                <th>累计完成/定额数量</th>
+                                <th>累计完成/定额数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row 1 -->
+                            <tr>
+                                <td>2829.101.0</td>
+                                <td>上部水冷壁</td>
+                                <td>2025-09-15</td>
+                                <td>
+                                    <div class="progress-card green">
+                                        <div class="progress-val-text">⊙ -/-</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 69,507/69,507</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 75,477/75,477</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 75,477/75,477</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr>
+                                <td>2829.102.0</td>
+                                <td>中部水冷壁</td>
+                                <td>2025-09-20</td>
+                                <td>
+                                    <div class="progress-card green">
+                                        <div class="progress-val-text">⊙ -/-</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 68,530/68,530</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 68,530/68,530</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 68,530/68,530</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                            </tr>
+                             <!-- Row 3 -->
+                            <tr>
+                                <td>2829.107.0</td>
+                                <td></td>
+                                <td>2025-09-25</td>
+                                <td>
+                                    <div class="progress-card green">
+                                        <div class="progress-val-text">⊙ 1/1</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 288/288</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 132,562/130,086</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">101%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 134,172/134,172</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                            </tr>
+                             <!-- Row 4 -->
+                             <tr>
+                                <td>2829.103.0</td>
+                                <td></td>
+                                <td>2025-10-05</td>
+                                <td>
+                                    <div class="progress-card green">
+                                        <div class="progress-val-text">⊙ 85,679/85,679</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 109,588/109,588</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 116,060/116,060</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="progress-card orange">
+                                        <div class="progress-val-text">✔ 116,060/116,060</div>
+                                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 100%"></div></div>
+                                        <div style="text-align: center; margin-top: 2px;">100%</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 底部图例 -->
+                <div class="prod-legend">
+                    <div class="legend-item"><div class="legend-icon" style="background:#67c23a; color:#fff">✔</div> 已完成</div>
+                    <div class="legend-item"><div class="legend-icon" style="background:#409eff; color:#fff">L</div> 正常</div>
+                    <div class="legend-item"><div class="legend-icon" style="background:#e6a23c; color:#fff">✔</div> 延期完成</div>
+                    <div class="legend-item"><div class="legend-icon" style="background:#e6a23c; color:#fff">⚠</div> 预警</div>
+                    <div class="legend-item"><div class="legend-icon" style="background:#f56c6c; color:#fff">⚠</div> 告警</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -988,7 +1411,8 @@
             const tabs = document.querySelectorAll('.tab-item');
             const tabPanes = {
                 '概要': document.getElementById('overviewPane'),
-                '设计': document.getElementById('designPane')
+                '设计': document.getElementById('designPane'),
+                '生产': document.getElementById('productionPane')
             };
 
             tabs.forEach(tab => {
