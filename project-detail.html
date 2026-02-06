@@ -1001,6 +1001,205 @@
             cursor: pointer;
             color: rgba(255, 255, 255, 0.5);
         }
+        /* =========================================
+           质量 Tab 样式 (Quality Tab Styles)
+           ========================================= */
+
+        .quality-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            height: 100%;
+            display: flex;
+            gap: 20px;
+            overflow: hidden;
+        }
+
+        /* 左侧树形导航 */
+        .quality-tree-sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--glass-border);
+            border-radius: 4px;
+            padding: 15px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .tree-node {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.8;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: flex;
+            align-items: center;
+        }
+
+        .tree-node:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .tree-node.active {
+            background: rgba(230, 0, 18, 0.1);
+            color: var(--primary-red);
+        }
+        
+        .tree-level-0 { font-weight: bold; background: rgba(230,0,18,0.05); margin-bottom: 5px; }
+        .tree-level-1 { padding-left: 20px; }
+        .tree-level-2 { padding-left: 35px; color: rgba(255,255,255,0.6); }
+
+        .tree-toggle {
+            display: inline-block;
+            width: 16px;
+            text-align: center;
+            margin-right: 5px;
+            font-size: 10px;
+            transform: rotate(90deg);
+            transition: transform 0.2s;
+        }
+        
+        .tree-toggle.collapsed {
+            transform: rotate(0deg);
+        }
+
+        /* 右侧文件内容区 */
+        .quality-content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow: hidden;
+        }
+
+        /* 搜索栏 */
+        .quality-search-bar {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            background: var(--primary-red);
+            color: #fff;
+            border: none;
+            padding: 0 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* 文件列表表格 */
+        .file-table-container {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+        }
+
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .file-table th, .file-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .file-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: normal;
+            position: sticky;
+            top: 0;
+        }
+
+        .file-table td {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .file-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .file-action-btn {
+            color: #409eff;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .file-action-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* 预览模态框 */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .preview-content {
+            width: 90%;
+            height: 90%;
+            background: #1e1e1e;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .preview-header {
+            padding: 15px 20px;
+            background: #252526;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .preview-body {
+            flex: 1;
+            overflow: auto;
+            background: #1e1e1e;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .preview-body img {
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -1691,6 +1890,72 @@
                 </div>
             </div>
         </div>
+        <!-- 质量内容 -->
+        <div id="qualityPane" class="tab-pane">
+            <div class="quality-panel">
+                <!-- 左侧树形导航 -->
+                <div class="quality-tree-sidebar">
+                    <div class="tree-node tree-level-0"><span class="tree-toggle">▶</span>1160012 | 能源-新疆慧能-热风炉总包(88)</div>
+                    <div class="tree-node tree-level-1"><span class="tree-toggle">▶</span>0.0锅筒(54)</div>
+                    <div class="tree-node tree-level-2 active"><span class="tree-toggle">▶</span>通用(34)</div>
+                    <div class="tree-node tree-level-2">工艺更改通知单(30)</div>
+                    <div class="tree-node tree-level-2">材料代用单(4)</div>
+                    <div class="tree-node tree-level-2">设计更改通知单(0)</div>
+                    <div class="tree-node tree-level-2">设计文件鉴定报告(0)</div>
+                    <div class="tree-node tree-level-2">材料质量证明书(0)</div>
+                    <div class="tree-node tree-level-2">材料复验报告(0)</div>
+                    <div class="tree-node tree-level-2">料单(0)</div>
+                    <div class="tree-node tree-level-2">外购件料单(0)</div>
+                    <div class="tree-node tree-level-2">不合格品处理单(0)</div>
+                    <div class="tree-node tree-level-1"><span class="tree-toggle collapsed">▶</span>过程资料(0)</div>
+                    <div class="tree-node tree-level-1"><span class="tree-toggle">▶</span>检验检测(20)</div>
+                    <div class="tree-node tree-level-2">无损探伤报告(20)</div>
+                    <div class="tree-node tree-level-2">无损探伤委托单(0)</div>
+                    <div class="tree-node tree-level-2">无损探伤记录(0)</div>
+                    <div class="tree-node tree-level-2">水压试验报告(0)</div>
+                    <div class="tree-node tree-level-0"><span class="tree-toggle collapsed">▶</span>1.0水冷壁(24)</div>
+                    <div class="tree-node tree-level-0"><span class="tree-toggle collapsed">▶</span>3.0过热器(2)</div>
+                </div>
+
+                <!-- 右侧文件列表 -->
+                <div class="quality-content-area">
+                    <div class="quality-search-bar">
+                        <input type="text" class="search-input" placeholder="请输入搜索内容">
+                        <button class="search-btn">搜索</button>
+                    </div>
+                    <div class="file-table-container">
+                        <table class="file-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">项目名称</th>
+                                    <th style="width: 15%">令号</th>
+                                    <th style="width: 15%">组件号</th>
+                                    <th style="width: 20%">文件类型</th>
+                                    <th style="width: 15%">文件子类</th>
+                                    <th style="width: 10%">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="qualityFileList">
+                                <!-- 动态生成文件列表 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 预览模态框 -->
+        <div id="previewModal" class="preview-modal">
+            <div class="preview-content">
+                <div class="preview-header">
+                    <span id="previewTitle">文件预览</span>
+                    <div class="close-btn" style="width:30px;height:30px;" onclick="closePreview()"></div>
+                </div>
+                <div class="preview-body">
+                    <img id="previewImage" src="" alt="Preview">
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1730,13 +1995,14 @@
                 '概要': document.getElementById('overviewPane'),
                 '设计': document.getElementById('designPane'),
                 '生产': document.getElementById('productionPane'),
-                '物流': document.getElementById('logisticsPane')
+                '物流': document.getElementById('logisticsPane'),
+                '质量': document.getElementById('qualityPane')
             };
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     const tabName = tab.textContent.trim();
-                    if (!tabPanes[tabName]) return; // 暂时只处理概要和设计
+                    if (!tabPanes[tabName]) return;
 
                     tabs.forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
@@ -1747,9 +2013,11 @@
                     });
                     tabPanes[tabName].classList.add('active');
 
-                    // 如果切换到设计，初始化预览器
+                    // 初始化逻辑
                     if (tabName === '设计') {
                         initDrawingViewer();
+                    } else if (tabName === '质量') {
+                        initQualityFiles();
                     }
                 });
             });
@@ -1797,6 +2065,65 @@
                 // 默认初始化第一组
                 updateSidebar(1);
             }
+
+            // 初始化质量文件列表
+            function initQualityFiles() {
+                const tbody = document.getElementById('qualityFileList');
+                if (tbody.children.length > 0) return;
+
+                const fileData = [
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '工艺更改通知单', subType: '', id: 'doc1' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '其他', type: '材料代用单', subType: '', id: 'doc2' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '工艺更改通知单', subType: '', id: 'doc3' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '工艺更改通知单', subType: '', id: 'doc4' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '工艺更改通知单', subType: '', id: 'doc5' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '无损探伤报告', subType: '', id: 'doc6' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '无损探伤报告', subType: '', id: 'doc7' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '无损探伤报告', subType: '', id: 'doc8' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '无损探伤报告', subType: '', id: 'doc9' },
+                    { name: '能源-新疆慧能-热风炉总包', code: '1160012', part: '0.0锅筒', type: '无损探伤报告', subType: '', id: 'doc10' }
+                ];
+
+                fileData.forEach(file => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${file.name}</td>
+                        <td>${file.code}</td>
+                        <td>${file.part}</td>
+                        <td>${file.type}</td>
+                        <td>${file.subType}</td>
+                        <td>
+                            <span class="file-action-btn" onclick="openPreview('${file.name} - ${file.type}')">查看</span>
+                            <span class="file-action-btn">下载</span>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // 全局预览函数
+            window.openPreview = function(title) {
+                const modal = document.getElementById('previewModal');
+                const previewImg = document.getElementById('previewImage');
+                const previewTitle = document.getElementById('previewTitle');
+                
+                // 设置预览图片
+                previewImg.src = "https://minio-api.cgboiler.com/form-test/iShot_2026-02-06_16.03.41.png";
+                previewTitle.textContent = title;
+                
+                modal.style.display = 'flex';
+            };
+
+            window.closePreview = function() {
+                document.getElementById('previewModal').style.display = 'none';
+            };
+            
+            // 点击模态框背景关闭
+            document.getElementById('previewModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closePreview();
+                }
+            });
         };
     </script>
 </body>
