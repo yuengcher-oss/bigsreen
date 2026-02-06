@@ -311,7 +311,7 @@
             width: 16px;
             height: 16px;
             background: var(--primary-red);
-            border: 2px solid #fff;
+            border: 2px solid var(--primary-red);
             border-radius: 50%;
             position: absolute;
             top: 50%;
@@ -321,13 +321,9 @@
             transition: transform 0.3s ease;
         }
 
-        .history-node .node-anchor {
-            border-color: #fff;
-            box-shadow: 0 0 15px var(--primary-red);
-        }
-
         .history-node:hover .node-anchor {
             transform: translateY(-50%) scale(1.4);
+            border-color: #fff;
         }
 
         .event-card {
@@ -371,14 +367,6 @@
             margin-bottom: 12px;
             color: var(--primary-red) !important;
             text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
-        }
-
-        .history-node:nth-child(odd) .year {
-            color: var(--primary-red) !important;
-        }
-
-        .history-node:nth-child(even) .year {
-            color: var(--primary-red) !important;
         }
 
         /* 增加卡片与圆点之间的连线 */
