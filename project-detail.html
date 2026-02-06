@@ -2728,6 +2728,11 @@
                 // 清空占位内容
                 mapContainer.innerHTML = '';
                 
+                // 重新创建 marker 容器 (确保在 ECharts 初始化前存在，并在清空后重建)
+                const markerWrapper = document.createElement('div');
+                markerWrapper.id = 'map-markers';
+                mapContainer.appendChild(markerWrapper);
+                
                 const chart = echarts.init(mapContainer);
                 
                 // 获取世界地图 GeoJSON (复用 1-2.html 的资源)
