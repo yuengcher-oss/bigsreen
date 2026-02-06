@@ -167,8 +167,9 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            background: rgba(30, 30, 35, 0.95);
+            background: #1e1e23; /* 使用不透明背景色遮挡 */
             z-index: 20;
+            position: relative; /* 确保层级生效 */
         }
 
         .gantt-timeline-container {
@@ -255,10 +256,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background: rgba(30, 30, 35, 0.5);
+            background: #1e1e23; /* 使用不透明背景色遮挡 */
             position: sticky;
             left: 0;
-            z-index: 5; /* 确保固定在左侧 */
+            z-index: 20; /* 提高层级，确保在滚动内容之上 */
         }
 
         .gantt-row-right {
@@ -796,37 +797,28 @@
             
             // 初始滚动到当前月份附近
             if (currentLineLeft > 0) {
-                const scrollInit = currentLineLeft - 300; // 偏移一点，让当前线在中间偏左
+                const scrollInit = currentLineLeft - 600; // 偏移多一点，让当前线在屏幕中间
                 headerScroll.scrollLeft = scrollInit;
-                // 注意：这里我们通过改变 row-right 的 transform 来模拟滚动，或者让 row-right 足够宽并在父容器滚动
-                // 更好的方式是：headerScroll 是唯一的滚动源，控制下方所有 row-right 的 transform
+                // 初始化 row-right 的位置
+                rowRights.forEach(el => {
+                    el.style.transform = `translateX(-${scrollInit}px)`;
+                });
             }
 
             // 绑定滚动事件：头部滚动 -> 带动下方所有行的内容平移
-            // 由于行数可能很多，直接操作 DOM 可能卡顿。
-            // 优化方案：gantt-body 作为一个整体容器，左右滚动时同步头部。
-            
-            // 修正结构逻辑：
-            // 我们需要让 gantt-body 也是一个可滚动的容器，或者每一行都是。
-            // 鉴于布局复杂，最简单的方式是：
-            // 让 gantt-row-right 都在一个大的 flex 容器里，外层 gantt-body 只负责垂直滚动。
-            // 但这样会导致左侧固定列很难处理。
-            
-            // 当前采用方案：
-            // gantt-header-months 宽度很大。
-            // gantt-row-right 宽度也很大。
-            // 监听 header 的 scroll 事件，去设置所有 gantt-row-right 的 transform translateX
-            
+            // 使用 requestAnimationFrame 优化性能
+            let ticking = false;
             headerScroll.addEventListener('scroll', (e) => {
-                const left = e.target.scrollLeft;
-                rowRights.forEach(el => {
-                    el.style.transform = `translateX(-${left}px)`;
-                });
-            });
-            
-            // 初始化位置
-             rowRights.forEach(el => {
-                el.style.transform = `translateX(-${headerScroll.scrollLeft}px)`;
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        const left = e.target.scrollLeft;
+                        rowRights.forEach(el => {
+                            el.style.transform = `translateX(-${left}px)`;
+                        });
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
             });
         }
 
