@@ -210,16 +210,16 @@
 
         .overview-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr; /* 改为比例分配，实现响应式缩放 */
+            grid-template-columns: 1fr 1fr 1fr;
             height: 100%;
-            gap: 20px; /* 增加列间距 */
-            padding: 0 20px 20px 20px;
+            gap: 25px;
+            padding: 0 25px 25px 25px;
         }
 
         /* 每一屏的容器 */
         .panel-column {
             height: 100%;
-            padding: 12px 12px;
+            padding: 10px; /* 统一内部间距 */
             display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(255, 255, 255, 0.05);
@@ -229,17 +229,17 @@
             border-right: none;
         }
 
-        /* 卡片样式调整，使其在三屏中更饱满 */
+        /* 卡片样式调整 */
         .detail-card {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--card-radius);
             backdrop-filter: blur(15px);
-            padding: 40px;
+            padding: 30px; /* 统一 padding */
             height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 40px;
+            gap: 30px; /* 统一 gap */
             box-shadow: var(--card-shadow);
         }
 
@@ -533,10 +533,10 @@
         /* 设计 Tab 专用样式 */
         .design-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 0.8fr 1.2fr; /* 调整为非对称双栏布局 */
             height: 100%;
-            gap: 20px;
-            padding: 0 20px 20px 20px;
+            gap: 25px;
+            padding: 0 25px 25px 25px;
         }
 
         /* CAD 总图展示 (左侧屏) */
@@ -553,35 +553,39 @@
 
         .cad-drawing-box {
             flex: 1;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed rgba(230, 0, 18, 0.2);
-            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .cad-drawing-box img {
-            width: 100%;
-            height: 100%;
+            max-width: 95%;
+            max-height: 95%;
             object-fit: contain;
-            filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 10px rgba(230, 0, 18, 0.2));
+            filter: brightness(1.1) contrast(1.1);
         }
 
         .cad-tag {
             position: absolute;
             top: 15px;
-            right: 20px;
+            right: 15px;
             font-family: 'Orbitron';
-            font-size: 12px;
-            color: var(--primary-red);
-            background: rgba(230, 0, 18, 0.1);
-            padding: 4px 12px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 10px;
             border-radius: 4px;
-            border: 1px solid rgba(230, 0, 18, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            letter-spacing: 1px;
             z-index: 10;
         }
 
-        /* 图纸预览器 (中间屏) */
+        /* 图纸预览器 (右侧屏) */
         .drawing-viewer-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -594,15 +598,15 @@
         /* 总图号 Tab 栏 */
         .viewer-header-tabs {
             display: flex;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(0, 0, 0, 0.2);
             border-bottom: 1px solid var(--glass-border);
-            padding: 0 10px;
+            padding: 0 5px;
         }
 
         .viewer-tab {
-            padding: 15px 25px;
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.5);
+            padding: 12px 20px;
+            font-size: 14px; /* 统一字号为 14px */
+            color: rgba(255, 255, 255, 0.4);
             cursor: pointer;
             transition: all 0.3s;
             border-bottom: 2px solid transparent;
@@ -610,7 +614,7 @@
         }
 
         .viewer-tab:hover {
-            color: #fff;
+            color: rgba(255, 255, 255, 0.8);
             background: rgba(255, 255, 255, 0.02);
         }
 
@@ -618,6 +622,7 @@
             color: var(--primary-red);
             border-bottom-color: var(--primary-red);
             background: rgba(230, 0, 18, 0.05);
+            font-weight: bold;
         }
 
         /* 下部主体：Sidebar + 内容区 */
@@ -628,17 +633,17 @@
         }
 
         .viewer-sidebar {
-            width: 280px;
+            width: 240px; /* 稍微调窄 */
             background: rgba(0, 0, 0, 0.2);
             border-right: 1px solid var(--glass-border);
             overflow-y: auto;
-            padding: 15px 0;
+            padding: 10px 0;
         }
 
         .sidebar-item {
-            padding: 12px 25px;
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.6);
+            padding: 10px 20px;
+            font-size: 13px; /* 稍微调小一点 */
+            color: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             transition: all 0.2s;
             border-left: 3px solid transparent;
@@ -656,11 +661,12 @@
             background: rgba(230, 0, 18, 0.08);
             color: #fff;
             border-left-color: var(--primary-red);
+            font-weight: 500;
         }
 
         .viewer-display {
             flex: 1;
-            background: #000;
+            background: #080a0d;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -669,25 +675,30 @@
         }
 
         .viewer-display img {
-            max-width: 95%;
-            max-height: 95%;
+            max-width: 92%;
+            max-height: 92%;
             object-fit: contain;
-            transition: transform 0.3s ease;
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
         }
 
         .viewer-display::after {
-            content: 'PREVIEW MODE';
+            content: 'VIEWER MODE';
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.3);
+            bottom: 15px;
+            right: 15px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.15);
             letter-spacing: 2px;
+            font-family: 'Orbitron';
         }
 
-        /* 右侧留空屏 */
-        .empty-panel {
-            background: transparent;
+        /* 设计说明文字 */
+        .design-info-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            line-height: 1.6;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         /* =========================================
@@ -702,7 +713,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 25px; /* 统一为 25px */
             overflow: hidden;
         }
 
@@ -1129,24 +1140,24 @@
         <!-- 设计内容 -->
         <div id="designPane" class="tab-pane">
             <div class="design-grid">
-                <!-- 左侧屏：CAD 总图 -->
+                <!-- 左侧：CAD 总图展示 -->
                 <div class="panel-column">
                     <div class="cad-view-panel">
                         <div class="section-title">设计总图</div>
                         <div class="cad-drawing-box">
-                            <div class="cad-tag">CAD / 3D DRAWING</div>
+                            <div class="cad-tag">CAD / 3D MODEL</div>
                             <img src="https://minio-api.cgboiler.com/form-test/iShot_2026-02-03_17.12.56.png" alt="CAD General Drawing">
                         </div>
-                        <div class="process-desc">
-                            该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。
+                        <div class="design-info-text">
+                            该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。通过全数字化的设计流程，实现了从图纸到制造的无缝对接。
                         </div>
                     </div>
                 </div>
 
-                <!-- 中间屏：图纸预览器 -->
+                <!-- 右侧：图纸预览器 -->
                 <div class="panel-column">
                     <div class="drawing-viewer-panel">
-                        <div style="padding: 30px 30px 0 30px;">
+                        <div style="padding: 25px 25px 0 25px;">
                             <div class="section-title">图纸详情</div>
                         </div>
                         <div class="viewer-header-tabs" id="generalDrawingTabs">
@@ -1161,11 +1172,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- 右侧屏：留空 -->
-                <div class="panel-column">
-                    <div class="empty-panel"></div>
                 </div>
             </div>
         </div>
