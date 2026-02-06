@@ -533,12 +533,13 @@
         /* 设计 Tab 专用样式 */
         .design-grid {
             display: grid;
-            grid-template-columns: 28% 72%; /* 左侧表格占 28%，右侧占 72% */
+            grid-template-columns: 1fr 1fr 1fr; /* 三栏均分 */
             gap: 25px;
             padding: 0 25px 25px 25px;
+            height: 100%;
         }
 
-        /* 设计进度面板 */
+        /* 设计进度面板 (左侧) */
         .design-progress-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -552,16 +553,7 @@
             overflow: hidden;
         }
 
-        /* 右侧视觉容器（包含 CAD 和 预览器） */
-        .design-visual-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 左右并排 */
-            gap: 25px;
-            height: 75vh;
-            min-height: 650px;
-        }
-
-        /* CAD 总图展示 (右侧左半部分) */
+        /* CAD 总图展示 (中间) */
         .cad-view-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -571,10 +563,32 @@
             flex-direction: column;
             gap: 15px;
             position: relative;
-            height: 100%; /* 填满容器 */
+            height: 75vh;
+            min-height: 650px;
+        }
+
+        /* CAD 容器优化 - 填满剩余空间 */
+        .cad-drawing-box {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            /* 移除内边距，让图片填满 */
+            padding: 0; 
+        }
+
+        .cad-drawing-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill; /* 强制填满容器，可能会拉伸，如需保持比例可用 cover 或 contain */
+            filter: brightness(1.1) contrast(1.1);
+            display: block; /* 消除图片底部间隙 */
         }
         
-        /* 图纸预览器 (右侧右半部分) */
+        /* 图纸预览器 (右侧) */
         .drawing-viewer-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -582,7 +596,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 100%; /* 填满容器 */
+            height: 75vh;
+            min-height: 650px;
         }
 
         /* 总图号 Tab 栏 */
@@ -1709,35 +1724,32 @@
                     </div>
                 </div>
 
-                <!-- 右侧：CAD 与 预览器 -->
-                <div class="design-visual-container">
-                    <!-- CAD 总图展示 -->
-                    <div class="cad-view-panel">
-                        <div class="section-title">设计总图</div>
-                        <div class="cad-drawing-box">
-                            <div class="cad-tag">CAD / 3D MODEL</div>
-                            <img src="https://minio-api.cgboiler.com/form-test/iShot_2026-02-03_17.12.56.png" alt="CAD General Drawing">
-                        </div>
-                        <div class="design-info-text">
-                            该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。通过全数字化的设计流程，实现了从图纸到制造的无缝对接。
-                        </div>
+                <!-- 中间：CAD 总图展示 -->
+                <div class="cad-view-panel">
+                    <div class="section-title">设计总图</div>
+                    <div class="cad-drawing-box">
+                        <div class="cad-tag">CAD / 3D MODEL</div>
+                        <img src="https://minio-api.cgboiler.com/form-test/iShot_2026-02-03_17.12.56.png" alt="CAD General Drawing">
                     </div>
+                    <div class="design-info-text">
+                        该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。通过全数字化的设计流程，实现了从图纸到制造的无缝对接。
+                    </div>
+                </div>
 
-                    <!-- 图纸预览器 -->
-                    <div class="drawing-viewer-panel">
-                        <div style="padding: 25px 25px 0 25px;">
-                            <div class="section-title">图纸查看器</div>
+                <!-- 右侧：图纸预览器 -->
+                <div class="drawing-viewer-panel">
+                    <div style="padding: 25px 25px 0 25px;">
+                        <div class="section-title">图纸查看器</div>
+                    </div>
+                    <div class="viewer-header-tabs" id="generalDrawingTabs">
+                        <!-- 动态生成 1.0 - 9.0 -->
+                    </div>
+                    <div class="viewer-body">
+                        <div class="viewer-sidebar" id="subDrawingSidebar">
+                            <!-- 动态生成分图号 -->
                         </div>
-                        <div class="viewer-header-tabs" id="generalDrawingTabs">
-                            <!-- 动态生成 1.0 - 9.0 -->
-                        </div>
-                        <div class="viewer-body">
-                            <div class="viewer-sidebar" id="subDrawingSidebar">
-                                <!-- 动态生成分图号 -->
-                            </div>
-                            <div class="viewer-display">
-                                <img id="drawingPreviewImg" src="https://minio-api.cgboiler.com/form-test/%E5%9B%BE%E7%89%871.png" alt="Drawing Preview">
-                            </div>
+                        <div class="viewer-display">
+                            <img id="drawingPreviewImg" src="https://minio-api.cgboiler.com/form-test/%E5%9B%BE%E7%89%871.png" alt="Drawing Preview">
                         </div>
                     </div>
                 </div>
