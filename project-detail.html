@@ -1014,6 +1014,7 @@
             display: flex;
             gap: 20px;
             overflow: hidden;
+            position: relative; /* 确保子元素绝对定位相对于此容器 */
         }
 
         /* 左侧树形导航 */
@@ -1027,6 +1028,7 @@
             flex-shrink: 0;
         }
 
+        /* ... (树形导航样式保持不变) ... */
         .tree-node {
             color: rgba(255, 255, 255, 0.8);
             font-size: 14px;
@@ -1076,6 +1078,7 @@
             flex-direction: column;
             gap: 15px;
             overflow: hidden;
+            transition: all 0.3s ease; /* 添加过渡效果 */
         }
 
         /* 搜索栏 */
@@ -1150,29 +1153,20 @@
             text-decoration: underline;
         }
 
-        /* 预览模态框 */
-        .preview-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .preview-content {
-            width: 90%;
-            height: 90%;
+        /* 预览面板 - 滑出式 */
+        .quality-preview-panel {
+            width: 0; /* 默认隐藏 */
             background: #1e1e1e;
-            border-radius: 8px;
+            border-left: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            transition: width 0.3s ease; /* 宽度过渡动画 */
+            flex-shrink: 0; /* 防止被挤压 */
+        }
+
+        .quality-preview-panel.active {
+            width: 50%; /* 展开时占据一半宽度 */
         }
 
         .preview-header {
@@ -1184,6 +1178,7 @@
             align-items: center;
             color: #fff;
             font-size: 16px;
+            white-space: nowrap;
         }
 
         .preview-body {
@@ -1199,6 +1194,7 @@
             max-width: 100%;
             height: auto;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            object-fit: contain; /* 确保图片完整显示 */
         }
     </style>
 </head>
@@ -1941,18 +1937,16 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- 预览模态框 -->
-        <div id="previewModal" class="preview-modal">
-            <div class="preview-content">
-                <div class="preview-header">
-                    <span id="previewTitle">文件预览</span>
-                    <div class="close-btn" style="width:30px;height:30px;" onclick="closePreview()"></div>
-                </div>
-                <div class="preview-body">
-                    <img id="previewImage" src="" alt="Preview">
+                <!-- 侧滑预览面板 -->
+                <div id="qualityPreviewPanel" class="quality-preview-panel">
+                    <div class="preview-header">
+                        <span id="previewTitle">文件预览</span>
+                        <div class="close-btn" style="width:24px;height:24px;border:none;" onclick="closePreview()"></div>
+                    </div>
+                    <div class="preview-body">
+                        <img id="previewImage" src="" alt="Preview">
+                    </div>
                 </div>
             </div>
         </div>
@@ -2103,7 +2097,7 @@
 
             // 全局预览函数
             window.openPreview = function(title) {
-                const modal = document.getElementById('previewModal');
+                const panel = document.getElementById('qualityPreviewPanel');
                 const previewImg = document.getElementById('previewImage');
                 const previewTitle = document.getElementById('previewTitle');
                 
@@ -2111,19 +2105,19 @@
                 previewImg.src = "https://minio-api.cgboiler.com/form-test/iShot_2026-02-06_16.03.41.png";
                 previewTitle.textContent = title;
                 
-                modal.style.display = 'flex';
+                // 激活面板
+                panel.classList.add('active');
             };
 
             window.closePreview = function() {
-                document.getElementById('previewModal').style.display = 'none';
+                const panel = document.getElementById('qualityPreviewPanel');
+                panel.classList.remove('active');
+                
+                // 清理数据 (可选)
+                // setTimeout(() => {
+                //     document.getElementById('previewImage').src = "";
+                // }, 300);
             };
-            
-            // 点击模态框背景关闭
-            document.getElementById('previewModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closePreview();
-                }
-            });
         };
     </script>
 </body>
