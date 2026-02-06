@@ -2098,12 +2098,15 @@
             // 全局预览函数
             window.openPreview = function(title) {
                 const panel = document.getElementById('qualityPreviewPanel');
-                const previewImg = document.getElementById('previewImage');
+                const previewBody = panel.querySelector('.preview-body');
                 const previewTitle = document.getElementById('previewTitle');
                 
-                // 设置预览图片
-                previewImg.src = "https://minio-api.cgboiler.com/form-test/iShot_2026-02-06_16.03.41.png";
+                // 设置标题
                 previewTitle.textContent = title;
+
+                // 使用 iframe 预览 PDF
+                // 注意：这里使用的是相对于服务器根目录的路径
+                previewBody.innerHTML = '<iframe src="data/工艺文件更改通知单_108fb336-0b2a-49c8-a35f-4b42288ea1b8_1769787141016.pdf" style="width:100%;height:100%;border:none;"></iframe>';
                 
                 // 激活面板
                 panel.classList.add('active');
@@ -2113,10 +2116,11 @@
                 const panel = document.getElementById('qualityPreviewPanel');
                 panel.classList.remove('active');
                 
-                // 清理数据 (可选)
-                // setTimeout(() => {
-                //     document.getElementById('previewImage').src = "";
-                // }, 300);
+                // 延迟清理，避免动画卡顿
+                setTimeout(() => {
+                    const previewBody = panel.querySelector('.preview-body');
+                    previewBody.innerHTML = '';
+                }, 300);
             };
         };
     </script>
