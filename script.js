@@ -65,7 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 更新导航状态
         navItems.forEach(item => {
-            item.classList.toggle('active', item.dataset.page === pageKey);
+            if (item.dataset.page) {
+                item.classList.toggle('active', item.dataset.page === pageKey);
+            }
         });
 
         // 异步填充三个板块
@@ -134,9 +136,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // 绑定事件
     navItems.forEach(item => {
         item.addEventListener('click', () => {
-            switchPage(item.dataset.page);
+            if (item.dataset.page) {
+                switchPage(item.dataset.page);
+            }
         });
     });
+
+    // 数字人交互逻辑
+    const keyiBtn = document.getElementById('btn-keyi');
+    const digitalHumanContainer = document.getElementById('digital-human');
+
+    if (keyiBtn && digitalHumanContainer) {
+        keyiBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isActive = keyiBtn.classList.toggle('active');
+            digitalHumanContainer.classList.toggle('active', isActive);
+        });
+    }
 
     // 默认打开第一页
     switchPage('company');
