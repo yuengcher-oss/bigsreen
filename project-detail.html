@@ -204,7 +204,7 @@
         .content-container {
             flex: 1;
             padding: 0;
-            overflow: hidden;
+            overflow-y: auto; /* 允许纵向弹性滚动 */
             width: 100%;
         }
 
@@ -523,7 +523,7 @@
         /* Tab 切换逻辑样式 */
         .tab-pane {
             display: none;
-            height: 100%;
+            min-height: 100%;
         }
 
         .tab-pane.active {
@@ -534,7 +534,6 @@
         .design-grid {
             display: grid;
             grid-template-columns: 0.8fr 1.2fr; /* 调整为非对称双栏布局 */
-            height: 100%;
             gap: 25px;
             padding: 0 25px 25px 25px;
         }
@@ -549,6 +548,8 @@
             flex-direction: column;
             gap: 20px;
             position: relative;
+            height: 75vh; /* 弹性高度 */
+            min-height: 650px; /* 保证最小可用性 */
         }
 
         .cad-drawing-box {
@@ -593,6 +594,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            height: 75vh; /* 弹性高度 */
+            min-height: 650px; /* 保证最小可用性 */
         }
 
         /* 总图号 Tab 栏 */
