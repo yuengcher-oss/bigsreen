@@ -1351,83 +1351,6 @@
         .supplier-table tr:hover td {
             background: rgba(255, 255, 255, 0.05);
         }
-
-        /* 地图自定义标记样式 */
-        #map-markers {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* 让鼠标事件穿透到地图 */
-            z-index: 10;
-            overflow: hidden; /* 防止溢出 */
-        }
-
-        .map-marker {
-            position: absolute;
-            transform: translate(-50%, -100%); /* 定位到底部中心 */
-            margin-top: -15px; /* 上移一点 */
-            pointer-events: auto; /* 允许交互 */
-            /* 移除 transition 以获得更好的跟手性，或者使用极其短的时间 */
-        }
-
-        .marker-content {
-            background-color: rgba(0, 20, 40, 0.85);
-            border: 1px solid #409eff;
-            border-radius: 4px;
-            padding: 0;
-            width: 200px;
-            height: 140px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            backdrop-filter: blur(4px);
-        }
-
-        .marker-title {
-            color: #fff;
-            font-size: 12px;
-            text-align: center;
-            padding: 6px 0;
-            font-weight: bold;
-            border-bottom: 1px solid rgba(64, 158, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .marker-live-dot {
-            width: 8px;
-            height: 8px;
-            background-color: #67c23a;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 5px #67c23a;
-            animation: marker-pulse 1.5s infinite ease-in-out;
-        }
-
-        .marker-live-text {
-            color: #67c23a;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .marker-video {
-            flex: 1;
-            background-size: cover;
-            background-position: center;
-            margin: 4px;
-            border-radius: 2px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        @keyframes marker-pulse {
-            0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7); }
-            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 10px 6px rgba(103, 194, 58, 0); }
-            100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(103, 194, 58, 0); }
-        }
     </style>
 </head>
 <body>
@@ -1953,7 +1876,6 @@
                 <div class="supplier-panel">
                     <div class="section-title">供应商分布</div>
                     <div class="supplier-map-box" id="supplierMap">
-                        <div id="map-markers"></div>
                         <!-- 地图容器，后续集成 ECharts -->
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); text-align: center;">
                             <div style="font-size: 40px; margin-bottom: 10px;">🗺️</div>
@@ -2728,11 +2650,6 @@
                 // 清空占位内容
                 mapContainer.innerHTML = '';
                 
-                // 重新创建 marker 容器 (确保在 ECharts 初始化前存在，并在清空后重建)
-                const markerWrapper = document.createElement('div');
-                markerWrapper.id = 'map-markers';
-                mapContainer.appendChild(markerWrapper);
-                
                 const chart = echarts.init(mapContainer);
                 
                 // 获取世界地图 GeoJSON (复用 1-2.html 的资源)
@@ -2804,20 +2721,36 @@
                                             {
                                                 type: 'rect',
                                                 shape: { width: 40, height: 40, r: 4 },
-                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                                style: { fill: 'rgba(30, 35, 45, 0.9)', stroke: 'rgba(255, 255, 255, 0.15)', lineWidth: 1, shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' }
                                             },
+                                            // 靶心图标
                                             {
-                                                type: 'path',
-                                                shape: {
-                                                    pathData: 'M512 85.333333c235.648 0 426.666667 191.018667 426.666667 426.666667s-191.018667 426.666667-426.666667 426.666667S85.333333 747.648 85.333333 512 276.352 85.333333 512 85.333333z m0 64C311.722667 149.333333 149.333333 311.722667 149.333333 512s162.389333 362.666667 362.666667 362.666667 362.666667-162.389333 362.666667-362.666667S712.277333 149.333333 512 149.333333z m0 170.666667c106.026667 0 192 85.973333 192 192s-85.973333 192-192 192-192-85.973333-192-192 85.973333-192 192-192z',
-                                                    width: 24,
-                                                    height: 24,
-                                                    x: -12,
-                                                    y: -12
-                                                },
+                                                type: 'circle',
                                                 left: 'center',
                                                 top: 'middle',
-                                                style: { fill: '#666' }
+                                                shape: { r: 8 },
+                                                style: { fill: 'none', stroke: '#fff', lineWidth: 1.5 }
+                                            },
+                                            {
+                                                type: 'circle',
+                                                left: 'center',
+                                                top: 'middle',
+                                                shape: { r: 3 },
+                                                style: { fill: '#fff' }
+                                            },
+                                            {
+                                                type: 'line',
+                                                shape: { x1: 0, y1: -12, x2: 0, y2: 12 },
+                                                left: 'center',
+                                                top: 'middle',
+                                                style: { stroke: '#fff', lineWidth: 1.5 }
+                                            },
+                                            {
+                                                type: 'line',
+                                                shape: { x1: -12, y1: 0, x2: 12, y2: 0 },
+                                                left: 'center',
+                                                top: 'middle',
+                                                style: { stroke: '#fff', lineWidth: 1.5 }
                                             }
                                         ]
                                     },
@@ -2833,20 +2766,13 @@
                                             {
                                                 type: 'rect',
                                                 shape: { width: 40, height: 40, r: 4 },
-                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                                style: { fill: 'rgba(30, 35, 45, 0.9)', stroke: 'rgba(255, 255, 255, 0.15)', lineWidth: 1, shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' }
                                             },
                                             {
-                                                type: 'path',
-                                                shape: {
-                                                    pathData: 'M853.333333 469.333333h-298.666666v-298.666666c0-23.466667-19.2-42.666667-42.666667-42.666667s-42.666667 19.2-42.666667 42.666667v298.666666h-298.666666c-23.466667 0-42.666667 19.2-42.666667 42.666667s19.2 42.666667 42.666667 42.666667h298.666666v298.666666c0 23.466667 19.2 42.666667 42.666667 42.666667s42.666667-19.2 42.666667-42.666667v-298.666666h298.666666c23.466667 0 42.666667-19.2 42.666667-42.666667s-19.2-42.666667-42.666667-42.666667z',
-                                                    width: 24,
-                                                    height: 24,
-                                                    x: -12,
-                                                    y: -12
-                                                },
+                                                type: 'text',
                                                 left: 'center',
                                                 top: 'middle',
-                                                style: { fill: '#666' }
+                                                style: { text: '+', font: '30px sans-serif', fill: '#fff' }
                                             }
                                         ]
                                     },
@@ -2862,20 +2788,13 @@
                                             {
                                                 type: 'rect',
                                                 shape: { width: 40, height: 40, r: 4 },
-                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                                style: { fill: 'rgba(30, 35, 45, 0.9)', stroke: 'rgba(255, 255, 255, 0.15)', lineWidth: 1, shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' }
                                             },
                                             {
-                                                type: 'path',
-                                                shape: {
-                                                    pathData: 'M853.333333 469.333333h-768c-23.466667 0-42.666667 19.2-42.666667 42.666667s19.2 42.666667 42.666667 42.666667h768c23.466667 0 42.666667-19.2 42.666667-42.666667s-19.2-42.666667-42.666667-42.666667z',
-                                                    width: 24,
-                                                    height: 24,
-                                                    x: -12,
-                                                    y: -12
-                                                },
+                                                type: 'text',
                                                 left: 'center',
                                                 top: 'middle',
-                                                style: { fill: '#666' }
+                                                style: { text: '-', font: '30px sans-serif', fill: '#fff' }
                                             }
                                         ]
                                     }
@@ -2950,18 +2869,90 @@
                                 coordinateSystem: 'geo',
                                 zlevel: 3,
                                 rippleEffect: { brushType: 'stroke', scale: 3 },
-                                label: { show: false }, // 禁用默认 label，使用 HTML 覆盖层
+                                label: {
+                                    show: true,
+                                    position: 'right',
+                                    formatter: function(params) {
+                                        if (params.name !== '新疆哈密(项目地)') {
+                                            return '{title|' + params.name + '}\n{live|● 实时监控}';
+                                        }
+                                        return '{title|' + params.name + '}';
+                                    },
+                                    rich: {
+                                        title: {
+                                            color: 'rgba(255,255,255,0.7)',
+                                            fontSize: 10,
+                                            padding: [0, 0, 5, 0]
+                                        },
+                                        live: {
+                                            color: '#67c23a',
+                                            fontSize: 10,
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            padding: [2, 4],
+                                            borderRadius: 2
+                                        }
+                                    }
+                                },
                                 itemStyle: {
                                     color: function(params) {
                                         return params.name === '新疆哈密(项目地)' ? '#e60012' : '#409eff';
                                     }
                                 },
                                 data: Object.keys(geoCoordMap).map(name => {
-                                    const isProject = name === '新疆哈密(项目地)';
+                                    // 为供应商点位添加视频配置
+                                    if (name !== '新疆哈密(项目地)') {
+                                        // 不同的模拟监控图片
+                                        const mockImgs = {
+                                            '成都天一': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo5ZDYfKc62TTFCKc7jGpBKHatI1bv-882MQ&s',
+                                            '银淇钢结构': 'https://www.wxzhouxiang.com/UploadFiles/FCK/2016-08/6360704423887500006618133.jpg',
+                                            '烟台百信': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
+                                            '山东博宇': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
+                                            '川锅科泰达': 'https://www.wxzhouxiang.com/uploadfiles/pictures/product/20240117122603_9878.jpg',
+                                            '扬州荣成': 'https://static.thefabricator.com/a/automated-fitting-and-welding-becomes-reality-in-structural-steel-fabrication-1522760902.jpg?size=1000x'
+                                        };
+                                        const mockImg = mockImgs[name] || 'https://minio-api.cgboiler.com/form-test/group%201.png';
+
+                                        return {
+                                            name: name,
+                                            value: geoCoordMap[name].concat([100]),
+                                            // 添加 label 配置，用于显示视频监控弹窗
+                                            label: {
+                                                show: true,
+                                                position: 'top',
+                                                distance: 10,
+                                                backgroundColor: 'rgba(0, 20, 40, 0.8)',
+                                                borderColor: '#409eff',
+                                                borderWidth: 1,
+                                                borderRadius: 4,
+                                                padding: 0,
+                                                width: 200,
+                                                height: 140,
+                                                formatter: function(params) {
+                                                     return `{title|${params.name}}\n{video|}`;
+                                                },
+                                                rich: {
+                                                    title: {
+                                                        color: '#fff',
+                                                        fontSize: 12,
+                                                        align: 'center',
+                                                        padding: [5, 0, 5, 0],
+                                                        fontWeight: 'bold'
+                                                    },
+                                                    video: {
+                                                        height: 110,
+                                                        width: 198,
+                                                        backgroundColor: {
+                                                            image: mockImg
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        };
+                                    }
                                     return {
                                         name: name,
                                         value: geoCoordMap[name].concat([100]),
-                                        label: isProject ? {
+                                        label: {
                                             show: true,
                                             position: 'right',
                                             formatter: '{b}',
@@ -2971,7 +2962,7 @@
                                             backgroundColor: 'rgba(0,0,0,0.5)',
                                             padding: [4, 8],
                                             borderRadius: 4
-                                        } : { show: false }
+                                        }
                                     };
                                 })
                             }
@@ -2979,66 +2970,7 @@
                     };
 
                     chart.setOption(option);
-                    
-                    // ==========================================
-                    // HTML 标记覆盖层逻辑 (实现呼吸灯效果)
-                    // ==========================================
-                    const markerContainer = document.getElementById('map-markers');
-                    const mockImgs = {
-                        '成都天一': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo5ZDYfKc62TTFCKc7jGpBKHatI1bv-882MQ&s',
-                        '银淇钢结构': 'https://www.wxzhouxiang.com/UploadFiles/FCK/2016-08/6360704423887500006618133.jpg',
-                        '烟台百信': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
-                        '山东博宇': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
-                        '川锅科泰达': 'https://www.wxzhouxiang.com/uploadfiles/pictures/product/20240117122603_9878.jpg',
-                        '扬州荣成': 'https://static.thefabricator.com/a/automated-fitting-and-welding-becomes-reality-in-structural-steel-fabrication-1522760902.jpg?size=1000x'
-                    };
-
-                    function updateMarkers() {
-                        markerContainer.innerHTML = '';
-                        // 获取供应商数据 (series index 2)
-                        const supplierData = option.series[2].data;
-                        
-                        supplierData.forEach(item => {
-                            // 跳过项目地，只处理供应商
-                            if (item.name === '新疆哈密(项目地)') return;
-                            
-                            const coords = item.value.slice(0, 2);
-                            // 转换为像素坐标
-                            const pixel = chart.convertToPixel('geo', coords);
-                            
-                            if (pixel) {
-                                const div = document.createElement('div');
-                                div.className = 'map-marker';
-                                div.style.left = pixel[0] + 'px';
-                                div.style.top = pixel[1] + 'px';
-                                
-                                const imgUrl = mockImgs[item.name] || 'https://minio-api.cgboiler.com/form-test/group%201.png';
-                                
-                                div.innerHTML = `
-                                    <div class="marker-content">
-                                        <div class="marker-title">
-                                            ${item.name}
-                                            <span class="marker-live-dot"></span>
-                                            <span class="marker-live-text">实时监控</span>
-                                        </div>
-                                        <div class="marker-video" style="background-image: url('${imgUrl}')"></div>
-                                    </div>
-                                `;
-                                markerContainer.appendChild(div);
-                            }
-                        });
-                    }
-
-                    // 初始渲染及事件绑定
-                    // 稍微延迟确保地图坐标系已准备好
-                    setTimeout(updateMarkers, 50);
-                    
-                    chart.on('georoam', updateMarkers);
-                    
-                    window.addEventListener('resize', () => {
-                        chart.resize();
-                        updateMarkers();
-                    });
+                    window.addEventListener('resize', () => chart.resize());
                     
                 } catch (e) {
                     console.error('Map loading failed', e);
