@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>产品创新 - 专利竞争格局</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="shared/system.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <script src="./data/patents_data.js"></script>
+    <script src="./data/ranking_data.js"></script>
+    <style>
+        :root {
+            --primary-red: #e60012;
+            --brand-red: #e60012;
+            --primary-blue: #0066ff;
+            --primary-yellow: #fadb14;
+            --bg-dark: #050a10;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(230, 0, 18, 0.2);
+        }
+
+        body {
+            background: var(--bg-dark);
+            color: #fff;
+            font-family: 'Noto Sans SC', sans-serif;
+            margin: 0;
+            padding: 12px 12px;
+            /* 缩小全局内边距 */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            /* 缩小模块间距 */
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* --- 顶部指标卡片 --- */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            /* 改为 5 列 */
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-red);
+        }
+
+        .stat-card:hover .stat-value,
+        .stat-card:hover .stat-label {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: var(--primary-red);
+        }
+
+        .stat-icon {
+            font-size: 24px;
+            /* 进一步缩小 */
+            opacity: 0.8;
+            width: 38px;
+            /* 进一步缩小 */
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(230, 0, 18, 0.1);
+            border-radius: 50%;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            /* 缩小字号以适应 5 列 */
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.4);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 8px;
+        }
+
+        /* --- 中间核心区 --- */
+        .middle-container {
+            display: flex;
+            gap: 12px;
+            flex: 1.3;
+            /* 增加中间占比 */
+            min-height: 0;
+        }
+
+        .ranking-panel {
+            flex: 6;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 20px;
+            /* 缩小 Padding */
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            /* 缩小标题 */
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: var(--primary-red);
+        }
+
+        .update-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            flex: 1; /* 占据剩余所有空间 */
+            height: 100%;
+        }
+
+        .ranking-table th {
+            text-align: center;
+            color: #fff;
+            padding: 8px;
+            /* 极简填充 */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 400;
+            background: rgba(230, 0, 18, 0.6); /* 红色背景表头 */
+            height: 40px; /* 固定表头高度 */
+        }
+
+        .ranking-table td {
+            padding: 4px 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ranking-table tr {
+            height: auto; /* 允许自动分配高度 */
+        }
+
+        .ranking-table tr.highlight {
+            background: #fff;
+            font-weight: 900;
+            font-size: 18px;
+            /* 增大字体 */
+        }
+
+        .ranking-table tr.highlight td {
+            color: var(--brand-red);
+            border: 1px solid var(--brand-red);
+            text-shadow: none;
+        }
+
+        .trend-sparkline {
+            width: 80px;
+            height: 30px;
+            /* 缩小 Sparkline */
+        }
+
+        /* 向上增长箭头动画 */
+        .up-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            /* 增加固定宽高形成背景 */
+            height: 28px;
+            background: var(--brand-red);
+            /* 红色背景 */
+            border-radius: 4px;
+            color: #fff;
+            /* 箭头变为白色 */
+            font-size: 20px;
+            filter: drop-shadow(0 0 12px rgba(230, 0, 18, 0.9));
+            animation: arrowJump 0.8s infinite alternate ease-in-out;
+            /* 改为更轻快的跳动动画 */
+            vertical-align: middle;
+            margin-left: 15px;
+            box-shadow: 0 0 15px rgba(230, 0, 18, 0.4);
+        }
+
+        .up-arrow svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            transform: rotate(-90deg);
+            /* 旋转向上的实心箭头 */
+        }
+
+        @keyframes arrowJump {
+            0% {
+                transform: translateY(2px);
+                filter: drop-shadow(0 0 5px rgba(230, 0, 18, 0.6));
+            }
+
+            100% {
+                transform: translateY(-4px);
+                filter: drop-shadow(0 0 15px rgba(230, 0, 18, 1));
+            }
+        }
+
+        @keyframes arrowUp {
+            0% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 0.6;
+            }
+        }
+
+        .word-cloud-panel {
+            flex: 4;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            gap: 12px;
+        }
+
+        .partners-container {
+            height: 40%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .partners-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 5px;
+        }
+
+        .partner-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .partner-item:hover {
+            background: rgba(230, 0, 18, 0.05);
+            border-color: rgba(230, 0, 18, 0.3);
+            transform: scale(1.05);
+        }
+
+        .partner-logo {
+            width: 100%;
+            height: 40px;
+            object-fit: contain;
+            filter: grayscale(1) brightness(1.5) contrast(1.2);
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .partner-item:hover .partner-logo {
+            filter: grayscale(0) brightness(1);
+        }
+
+        .partner-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
+
+        /* 专利轮播列表样式 */
+        .patent-carousel-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .patent-list {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            padding: 10px;
+        }
+
+        .patent-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid var(--brand-red);
+            transition: all 0.3s ease;
+        }
+
+        .patent-item:hover {
+            background: rgba(230, 0, 18, 0.1);
+            transform: translateX(5px);
+        }
+
+        .patent-name {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-right: 15px;
+            flex: 1;
+        }
+
+        .patent-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(230, 0, 18, 0.2);
+            color: var(--brand-red);
+            border: 1px solid rgba(230, 0, 18, 0.3);
+            white-space: nowrap;
+        }
+
+        .patent-tag.invention {
+            background: rgba(0, 102, 255, 0.2);
+            color: #0066ff;
+            border-color: rgba(0, 102, 255, 0.3);
+        }
+
+        /* 渐变遮罩 */
+        .patent-carousel-container::before,
+        .patent-carousel-container::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 40px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .patent-carousel-container::before {
+            top: 0;
+            background: linear-gradient(to bottom, #050a10 0%, transparent 100%);
+        }
+
+        .patent-carousel-container::after {
+            bottom: 0;
+            background: linear-gradient(to top, #050a10 0%, transparent 100%);
+        }
+
+        /* --- 底部区 --- */
+        .bottom-container {
+            flex: 1;
+            /* 改为 Flex 比例而非固定像素 */
+            min-height: 200px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #trendChart {
+            flex: 1;
+            width: 100%;
+            min-height: 0; /* 允许高度自适应填充剩余空间 */
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* 趋势图下方数据表 */
+        .trend-data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0; /* 减小间距 */
+            font-size: 12px; /* 稍微缩小字号 */
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .trend-data-table th,
+        .trend-data-table td {
+            padding: 8px 4px; /* 压缩内边距 */
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .trend-data-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff; /* 文字改为白色 */
+            font-weight: 400;
+        }
+
+        .trend-data-table td {
+            color: #fff; /* 文字改为白色 */
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .trend-data-table .row-label {
+            text-align: center;
+            padding-left: 10px;
+            color: #fff; /* 文字改为白色 */
+            font-family: 'Noto Sans SC', sans-serif;
+            font-weight: 700;
+            width: 100px;
+        }
+
+        .trend-data-table .highlight-cell {
+            color: #fff;
+            background: rgba(230, 0, 18, 0.1);
+        }
+
+        /* 图标占位 */
+        .icon {
+            font-style: normal;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1. 顶部指标卡片 -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon">📜</div>
+            <div class="stat-info">
+                <span class="stat-value">378</span>
+                <span class="stat-label">拥有专利总数</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔬</div>
+            <div class="stat-info">
+                <span class="stat-value">72</span>
+                <span class="stat-label">发明专利实审中</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🇨🇳</div>
+            <div class="stat-info">
+                <span class="stat-value">5</span>
+                <span class="stat-label">参与制定国家标准</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⚙️</div>
+            <div class="stat-info">
+                <span class="stat-value">8</span>
+                <span class="stat-label">参与制定行业标准</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-info">
+                <span class="stat-value">34</span>
+                <span class="stat-label">行业领先产品</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 中间核心区 -->
+    <div class="middle-container">
+        <!-- 左侧排名看板 -->
+        <div class="ranking-panel">
+            <div class="panel-header">
+                <div class="panel-title">行业专利竞争排名实时看板</div>
+                <div class="update-time" id="lastUpdateTime">数据最后更新：2分钟前</div>
+            </div>
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">序号</th>
+                        <th rowspan="2">公司名称</th>
+                        <th rowspan="2">有效授权<br>专利合计</th>
+                        <th rowspan="2">实用新型<br>授权</th>
+                        <th rowspan="2">发明授权<br>权</th>
+                        <th rowspan="2">发明审中</th>
+                        <th colspan="6">近五年授权数量</th>
+                    </tr>
+                    <tr>
+                        <th>2025</th>
+                        <th>2024</th>
+                        <th>2023</th>
+                        <th>2022</th>
+                        <th>2021</th>
+                        <th>合计</th>
+                    </tr>
+                </thead>
+                <tbody id="rankingBody">
+                    <!-- 数据行将通过 JS 动态填充 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 右侧词云图 -->
+        <div class="word-cloud-panel">
+            <div class="partners-container">
+                <div class="panel-title">产学研合作高校</div>
+                <div class="partners-grid">
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E6%96%B0%E7%96%86%E5%A4%A7%E5%AD%A6.png" alt="新疆大学" class="partner-logo">
+                        <span class="partner-name">新疆大学</span>
+                    </div>
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E4%B8%9C%E5%8D%97%E5%A4%A7%E5%AD%A6.png" alt="东南大学" class="partner-logo">
+                        <span class="partner-name">东南大学</span>
+                    </div>
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E4%B8%AD%E5%9B%BD%E7%9F%BF%E4%B8%9A%E5%A4%A7%E5%AD%A6.png" alt="中国矿业大学" class="partner-logo">
+                        <span class="partner-name">中国矿业大学</span>
+                    </div>
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E5%8C%97%E4%BA%AC%E7%A7%91%E6%8A%80%E5%A4%A7%E5%AD%A6.png" alt="北京科技大学" class="partner-logo">
+                        <span class="partner-name">北京科技大学</span>
+                    </div>
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E5%A4%A9%E6%B4%A5%E5%A4%A7%E5%AD%A6.png" alt="天津大学" class="partner-logo">
+                        <span class="partner-name">天津大学</span>
+                    </div>
+                    <div class="partner-item">
+                        <img src="https://minio-api.cgboiler.com/form-test/%E6%98%86%E6%98%8E%E7%90%86%E5%B7%A5%E5%A4%A7%E5%AD%A6.png" alt="昆明理工大学" class="partner-logo">
+                        <span class="partner-name">昆明理工大学</span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-title">拥有专利</div>
+            <div class="patent-carousel-container" id="patentCarousel">
+                <div class="patent-list" id="patentList">
+                    <!-- 动态生成专利列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 底部趋势图 -->
+    <div class="bottom-container">
+        <div class="panel-title">近五年专利分类走势分析</div>
+        <div id="trendChart"></div>
+        <table class="trend-data-table" id="trendDataTable">
+            <!-- 动态生成 -->
+        </table>
+    </div>
+
+    <script>
+        // --- 填充表格 ---
+        function renderTable() {
+            const body = document.getElementById('rankingBody');
+            const data = window.rankingData; // Use data from ranking_data.js
+            
+            if (!data) return;
+
+            body.innerHTML = data.map(c => `
+                <tr class="${c.isSelf ? 'highlight' : ''}">
+                    <td>${c.id}</td>
+                    <td>${c.name}</td>
+                    <td>${c.total}</td>
+                    <td>${c.utility}</td>
+                    <td>${c.invention}</td>
+                    <td>${c.pending}</td>
+                    <td>${c.years.y2025}</td>
+                    <td>${c.years.y2024}</td>
+                    <td>${c.years.y2023}</td>
+                    <td>${c.years.y2022}</td>
+                    <td>${c.years.y2021}</td>
+                    <td>${c.sum5}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- 渲染 Sparkline (已移除，数据直接展示) ---
+        // function renderSparkline(containerId, data, isSelf) { ... }
+
+        // --- 专利轮播逻辑 ---
+        function initPatentCarousel() {
+            const listContainer = document.getElementById('patentList');
+            const data = window.patentsData;
+            if (!listContainer || !data) return;
+
+            // 渲染专利项
+            const renderPatents = (items) => {
+                return items.map(item => `
+                    <div class="patent-item">
+                        <span class="patent-name" title="${item.name}">${item.name}</span>
+                        <span class="patent-tag ${item.type === '发明' ? 'invention' : ''}">${item.type}</span>
+                    </div>
+                `).join('');
+            };
+
+            // 填充内容
+            listContainer.innerHTML = renderPatents(data) + renderPatents(data);
+
+            let currentTop = 0;
+            const scrollSpeed = 0.3;
+            
+            // 动态获取总高度（第一组的高度）
+            const firstGroupHeight = listContainer.scrollHeight / 2;
+
+            function scroll() {
+                currentTop -= scrollSpeed;
+                if (Math.abs(currentTop) >= firstGroupHeight) {
+                    currentTop = 0;
+                }
+                listContainer.style.transform = `translateY(${currentTop}px)`;
+                animationId = requestAnimationFrame(scroll);
+            }
+
+            let animationId = requestAnimationFrame(scroll);
+            const container = document.getElementById('patentCarousel');
+            container.onmouseenter = () => cancelAnimationFrame(animationId);
+            container.onmouseleave = () => animationId = requestAnimationFrame(scroll);
+        }
+
+        // --- 底部趋势图 ---
+        function initTrendChart() {
+            const years = ['2021', '2022', '2023', '2024', '2025', '2026P'];
+
+            // 模拟数据
+            const inventionDataActual = [20, 35, 62, 85, 110, 150];
+            const utilityData = [150, 180, 220, 280, 351, 420];
+            const designData = [10, 12, 15, 18, 25, 35];
+
+            // 填充数据表
+            const table = document.getElementById('trendDataTable');
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>统计维度</th>
+                        ${years.map(y => `<th>${y}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="row-label">发明专利</td>
+                        ${inventionDataActual.map(v => `<td>${v}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td class="row-label">实用新型</td>
+                        ${utilityData.map(v => `<td>${v}</td>`).join('')}
+                    </tr>
+                    <tr>
+                        <td class="row-label">外观设计</td>
+                        ${designData.map(v => `<td>${v}</td>`).join('')}
+                    </tr>
+                </tbody>
+            `;
+
+            const chart = echarts.init(document.getElementById('trendChart'));
+            chart.setOption({
+                tooltip: {
+                    trigger: 'axis',
+                    backgroundColor: 'rgba(5, 10, 16, 0.9)',
+                    borderColor: 'var(--border-color)',
+                    textStyle: { color: '#fff' }
+                },
+                legend: {
+                    data: ['发明专利', '实用新型', '外观设计'],
+                    top: 0, // 移到顶部以节省空间
+                    right: '5%',
+                    textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 }
+                },
+                grid: { left: '3%', right: '5%', top: '25', bottom: '25', containLabel: true }, // 调整内边距适应新布局
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: years,
+                    axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+                    axisLabel: {
+                        color: 'rgba(255, 255, 255, 0.8)',
+                        fontSize: 10,
+                        margin: 10
+                    }
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '实用/外观',
+                        position: 'left',
+                        nameTextStyle: { color: 'rgba(255,255,255,0.4)', padding: [0, 0, 0, 30] }, // 增加内边距防止重叠
+                        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+                    },
+                    {
+                        type: 'value',
+                        name: '发明专利',
+                        position: 'right',
+                        nameTextStyle: { color: 'rgba(255,255,255,0.4)', padding: [0, 30, 0, 0] }, // 增加内边距防止重叠
+                        splitLine: { show: false }
+                    }
+                ],
+                series: [
+                    {
+                        name: '发明专利',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: inventionDataActual,
+                        smooth: true,
+                        showSymbol: true,
+                        symbolSize: 6,
+                        lineStyle: { width: 3, color: '#0066ff', shadowBlur: 10, shadowColor: 'rgba(0,102,255,0.5)' }, // 蓝色线，增加阴影增强可见度
+                        itemStyle: { color: '#0066ff', borderColor: '#fff', borderWidth: 1 },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(0, 102, 255, 0.3)' },
+                                { offset: 1, color: 'transparent' }
+                            ])
+                        },
+                        z: 3 // 确保在最上层
+                    },
+                    {
+                        name: '实用新型',
+                        type: 'line',
+                        data: utilityData,
+                        smooth: true,
+                        showSymbol: true,
+                        symbolSize: 6,
+                        lineStyle: { width: 3, color: '#e60012', shadowBlur: 10, shadowColor: 'rgba(230,0,18,0.5)' }, // 红色线
+                        itemStyle: { color: '#e60012', borderColor: '#fff', borderWidth: 1 },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(230, 0, 18, 0.3)' },
+                                { offset: 1, color: 'transparent' }
+                            ])
+                        },
+                        z: 2
+                    },
+                    {
+                        name: '外观设计',
+                        type: 'line',
+                        data: designData,
+                        smooth: true,
+                        showSymbol: true,
+                        symbolSize: 6,
+                        lineStyle: { width: 3, color: '#fadb14', shadowBlur: 10, shadowColor: 'rgba(250,219,20,0.5)' }, // 黄色线
+                        itemStyle: { color: '#fadb14', borderColor: '#fff', borderWidth: 1 },
+                        areaStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                { offset: 0, color: 'rgba(250, 219, 20, 0.3)' },
+                                { offset: 1, color: 'transparent' }
+                            ])
+                        },
+                        z: 1
+                    }
+                ]
+            });
+        }
+
+        // --- 自动更新时间微动 ---
+        function startUpdateTime() {
+            let minutes = 2;
+            setInterval(() => {
+                minutes++;
+                document.getElementById('lastUpdateTime').textContent = `数据最后更新：${minutes}分钟前`;
+            }, 60000);
+        }
+
+        // --- 初始化全部 ---
+        window.addEventListener('load', () => {
+            renderTable();
+            initPatentCarousel();
+            initTrendChart();
+            startUpdateTime();
+
+            window.addEventListener('resize', () => {
+                const chart = echarts.getInstanceByDom(document.getElementById('trendChart'));
+                if (chart) chart.resize();
+            });
+        });
+    </script>
+</body>
+
+</html>

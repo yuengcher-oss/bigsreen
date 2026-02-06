@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>项目案例墙</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: transparent;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+
+        .case-card {
+            background: rgba(15, 17, 21, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 背景图容器 */
+        .case-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.8s ease;
+            filter: brightness(0.6) contrast(1.1);
+        }
+
+        /* 渐变遮罩层 */
+        .case-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top,
+                    rgba(15, 17, 21, 0.95) 0%,
+                    rgba(15, 17, 21, 0.4) 50%,
+                    transparent 100%);
+            z-index: 1;
+            transition: all 0.5s ease;
+        }
+
+        /* 悬停时的遮罩变化 - 保持深色背景以突出红色文字 */
+        .case-card:hover .case-overlay {
+            background: linear-gradient(to top,
+                    rgba(15, 17, 21, 0.95) 0%,
+                    rgba(15, 17, 21, 0.7) 100%);
+            opacity: 0.95;
+        }
+
+        /* 内容容器 */
+        .case-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 24px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 项目名称 */
+        .project-name {
+            font-size: 16px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        /* 产品名称 */
+        .product-name {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Noto Sans SC', sans-serif;
+            margin-bottom: 0;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        /* 装饰图标 */
+        .case-icon {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+        }
+
+        /* 悬停交互 */
+        .case-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(230, 0, 18, 0.2);
+            border-color: rgba(230, 0, 18, 0.4);
+        }
+
+        .case-card:hover .case-image {
+            transform: scale(1.15);
+            filter: brightness(0.8) contrast(1.2);
+        }
+
+        /* 悬停时内容上移并显示图标 */
+        .case-card:hover .case-content {
+            transform: translateY(-40%);
+            bottom: unset;
+            top: 40%;
+        }
+
+        .case-card:hover .case-icon {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .case-card:hover .project-name {
+            font-size: 19px;
+            margin-bottom: 12px;
+            color: var(--primary-red);
+            text-shadow: 0 0 15px rgba(230, 0, 18, 0.6);
+        }
+
+        .case-card:hover .product-name {
+            color: var(--primary-red);
+            opacity: 0.95;
+            font-size: 14px;
+            max-width: 85%;
+            line-height: 1.6;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="caseGrid">
+        <!-- 动态生成 -->
+    </div>
+
+    <!-- 简单内联 SVG 图标定义 -->
+    <svg style="display: none;">
+        <symbol id="icon-project" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 21h18M5 21V7l8-4 8 4v14M8 21v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </symbol>
+    </svg>
+
+    <script src="case_data.js"></script>
+    <script>
+        const container = document.getElementById('caseGrid');
+
+        function renderCases() {
+            let html = '';
+            caseData.forEach(item => {
+                // 使用默认背景图占位
+                const bgImage = item.image && item.image.startsWith('http')
+                    ? item.image
+                    : 'https://images.unsplash.com/photo-1565008447742-97f6f38c985c?auto=format&fit=crop&w=800&q=80';
+
+                html += `
+                    <div class="case-card" data-id="${item.id}">
+                        <div class="case-image" style="background-image: url('${bgImage}')"></div>
+                        <div class="case-overlay"></div>
+                        <div class="case-content">
+                            <!-- 悬停时显示的图标 -->
+                            <svg class="case-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5">
+                                <use href="#icon-project"></use>
+                            </svg>
+                            <div class="project-name">${item.project}</div>
+                            <div class="product-name">${item.product}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        renderCases();
+
+        // 使用事件委托处理点击，避免 inline onclick 的转义问题
+        container.addEventListener('click', (e) => {
+            const card = e.target.closest('.case-card');
+            if (card) {
+                const id = parseInt(card.dataset.id);
+                const item = caseData.find(d => d.id === id);
+                
+                // 给点击一个视觉反馈
+                card.style.transform = 'scale(0.95)';
+                setTimeout(() => card.style.transform = '', 100);
+                
+                if (item) {
+                    console.log('准备打开新标签页查看详情:', item);
+                    
+                    // 构建详情页 URL 参数
+                    const params = new URLSearchParams();
+                    params.append('project', item.project || '');
+                    params.append('product', item.product || '');
+                    params.append('category', item.category || '核心案例');
+                    // 如果有特定图片路径可以在这里添加
+                    // params.append('image', 'path/to/image.jpg');
+
+                    const detailUrl = `project-detail.html?${params.toString()}`;
+                    
+                    // 在新标签页打开
+                    window.open(detailUrl, '_blank');
+                }
+            }
+        });
+
+        // 本地降级预览逻辑
+        function createLocalModal(data) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0; left: 0; width: 100vw; height: 100vh;
+                background: rgba(0, 0, 0, 0.95);
+                z-index: 10000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                backdrop-filter: blur(10px);
+                cursor: pointer;
+            `;
+            modal.innerHTML = `
+                <div style="width: 90%; height: 90%; position: relative;">
+                    <img src="project.jpg" style="width: 100%; height: 100%; object-fit: contain;">
+                    <div style="position: absolute; top: 20px; right: 20px; color: #fff; border: 1px solid #fff; padding: 5px 15px; border-radius: 4px;">点击任意处关闭</div>
+                </div>
+            `;
+            modal.onclick = () => modal.remove();
+            document.body.appendChild(modal);
+        }
+    </script>
+</body>
+
+</html>

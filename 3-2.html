@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>全球业务分布</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: transparent;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* 地图容器充满并留出边距 */
+        .map-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        #globalDeployMap {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 悬浮图例面板 */
+        .legend-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(15, 17, 21, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .legend-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .legend-title {
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            border-left: 3px solid #e60012;
+            padding-left: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            pointer-events: auto;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            color: var(--primary-red);
+            transform: translateX(2px);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .person-icon {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 详情弹窗 */
+        .detail-card {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 320px;
+            background: rgba(15, 17, 21, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            display: none;
+            z-index: 20;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(230, 0, 18, 0.1);
+            backdrop-filter: blur(15px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 12px;
+        }
+
+        .card-title {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .close-btn {
+            color: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            font-size: 24px;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #fff;
+        }
+
+        .card-content {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .stat-row:hover .stat-label,
+        .stat-row:hover .stat-val {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-val {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 返回全图按钮 */
+        .reset-map-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(230, 0, 18, 0.15);
+            border: 1px solid rgba(230, 0, 18, 0.3);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 15;
+            display: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .reset-map-btn:hover {
+            background: rgba(230, 0, 18, 0.3);
+            border-color: rgba(230, 0, 18, 0.5);
+            transform: translateY(-2px);
+        }
+
+        /* 顶部指标样式 */
+        .map-metrics-header {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 80px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .map-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .map-metric .metric-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 1.5px;
+            font-weight: 300;
+        }
+
+        .map-metric .metric-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(230, 0, 18, 0.8), 0 0 40px rgba(230, 0, 18, 0.4);
+            line-height: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="map-container">
+        <!-- 顶部指标 -->
+        <div class="map-metrics-header">
+            <div class="map-metric">
+                <span class="metric-label">海外项目数量</span>
+                <span class="metric-value">12</span>
+            </div>
+            <div class="map-metric">
+                <span class="metric-label">国内新疆市场</span>
+                <span class="metric-value">32</span>
+            </div>
+            <div class="map-metric">
+                <span class="metric-label">国内内地市场</span>
+                <span class="metric-value">1472</span>
+            </div>
+        </div>
+
+        <div id="globalDeployMap"></div>
+
+        <!-- 右上角地图重置按钮 -->
+        <div class="reset-map-btn" id="resetBtn">返回全球视图</div>
+
+        <!-- 左下角图例 -->
+        <div class="legend-panel">
+            <div class="legend-group">
+                <div class="legend-title">项目状态 Project Status</div>
+                <div class="legend-items">
+                    <div class="legend-item" onclick="toggleSeries('设计中')"><span class="dot"
+                            style="background: #ffcc00; color: #ffcc00;"></span>设计中</div>
+                    <div class="legend-item" onclick="toggleSeries('制造中')"><span class="dot"
+                            style="background: #0066ff; color: #0066ff;"></span>制造中</div>
+                    <div class="legend-item" onclick="toggleSeries('安装中')"><span class="dot"
+                            style="background: #ffcc00; color: #ffcc00;"></span>安装中</div>
+                    <div class="legend-item" onclick="toggleSeries('运行中')"><span class="dot"
+                            style="background: #22c55e; color: #22c55e;"></span>运行中</div>
+                </div>
+            </div>
+            <div class="legend-group">
+                <div class="legend-title">人员分布 Personnel</div>
+                <div class="legend-items">
+                    <div class="legend-item"><span class="dot" style="background: #e60012; color: #e60012;"></span>服务人员
+                    </div>
+                    <div class="legend-item"><span class="dot" style="background: #ffcc00; color: #ffcc00;"></span>外检人员
+                    </div>
+                    <div class="legend-item"><span class="dot" style="background: #0066ff; color: #0066ff;"></span>销售人员
+                    </div>
+                    <div class="legend-item"><span class="dot" style="background: #ffffff; color: #ffffff;"></span>技术人员
+                    </div>
+                    <div class="legend-item"><span class="dot" style="background: #94a3b8; color: #94a3b8;"></span>生产人员
+                    </div>
+                    <div class="legend-item"><span class="dot" style="background: #ffcc00; color: #ffcc00;"></span>管理人员
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详情弹窗 -->
+        <div class="detail-card" id="detailCard">
+            <div class="card-header">
+                <span class="card-title">区域详情</span>
+                <span class="close-btn" onclick="closeDetail()">×</span>
+            </div>
+            <div class="card-content" id="cardContent">
+                <!-- 动态填充 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="map_data.js"></script>
+    <script>
+        let myChart = null;
+        let currentZoom = 1;
+
+        async function initMap() {
+            myChart = echarts.init(document.getElementById('globalDeployMap'));
+            myChart.showLoading({ color: '#e60012', maskColor: 'rgba(0,0,0,0.2)' });
+
+            try {
+                const res = await fetch('https://fastly.jsdelivr.net/npm/echarts/map/json/world.json');
+                const worldJson = await res.json();
+                echarts.registerMap('world', worldJson);
+                myChart.hideLoading();
+
+                const option = {
+                    tooltip: {
+                        trigger: 'item',
+                        backgroundColor: 'rgba(15, 17, 21, 0.9)',
+                        borderColor: 'rgba(255, 255, 255, 0.1)',
+                        borderWidth: 1,
+                        textStyle: { color: '#fff', fontSize: 12 },
+                        backdropFilter: 'blur(10px)',
+                        formatter: function (params) {
+                            if (params.seriesType === 'scatter' || params.seriesType === 'effectScatter') {
+                                const data = params.data;
+                                if (data.status) {
+                                    return `<div style="padding: 4px 8px;">
+                                        <b style="font-size: 14px; display: block; margin-bottom: 4px;">${data.name}</b>
+                                        <span style="color: rgba(255,255,255,0.7);">状态: </span>
+                                        <span style="color:${data.color}; font-weight: bold;">${data.status}</span>
+                                    </div>`;
+                                } else {
+                                    return `<div style="padding: 4px 8px;">
+                                        <b style="font-size: 14px; display: block; margin-bottom: 4px;">${data.name}</b>
+                                        <span style="color: rgba(255,255,255,0.7);">职业: </span>
+                                        <span style="color: #fff; font-weight: bold;">${data.role}</span>
+                                    </div>`;
+                                }
+                            }
+                            return params.name;
+                        }
+                    },
+                    geo: {
+                        map: 'world',
+                        roam: true,
+                        zoom: 1.2,
+                        label: { show: false },
+                        itemStyle: {
+                            areaColor: '#1a1e26',
+                            borderColor: 'rgba(255, 255, 255, 0.05)',
+                            borderWidth: 1
+                        },
+                        emphasis: {
+                            itemStyle: { areaColor: '#252b36' },
+                            label: { show: false }
+                        }
+                    },
+                    series: [
+                        // 项目图层 (scatter，大数据量)
+                        ...['设计中', '制造中', '安装中', '运行中'].map(status => {
+                            return {
+                                name: status,
+                                type: 'scatter',
+                                coordinateSystem: 'geo',
+                                data: mapData.projects.filter(p => p.status === status),
+                                symbol: 'circle', // 项目统一用圆形
+                                symbolSize: 4,
+                                itemStyle: {
+                                    color: (params) => params.data.color,
+                                    shadowBlur: 5,
+                                    shadowColor: (params) => params.data.color
+                                },
+                                large: true,
+                                largeThreshold: 500
+                            };
+                        }),
+                        // 人员图层 (effectScatter，带波纹效果)
+                        {
+                            name: 'ServiceStaff',
+                            type: 'effectScatter',
+                            coordinateSystem: 'geo',
+                            data: mapData.staff,
+                            // 动态获取 SVG path 作为图标
+                            symbol: (val, params) => params.data.symbol,
+                            symbolSize: 10, // 人员图标稍微大一点
+                            rippleEffect: { scale: 3, brushType: 'stroke' },
+                            itemStyle: {
+                                color: (params) => params.data.itemStyle.color
+                            },
+                            emphasis: { scale: 1.5 }
+                        }
+                    ]
+                };
+
+                myChart.setOption(option);
+
+                // 点击事件 - 下钻逻辑
+                myChart.on('click', function (params) {
+                    if (params.componentType === 'geo' || params.seriesType === 'scatter' || params.seriesType === 'effectScatter') {
+                        // 模拟下钻：缩放至点击点或区域中心
+                        let center = [0, 0];
+                        if (params.data && params.data.value) {
+                            center = params.data.value; // 点击了点
+                            showDetail(params.data); // 显示详情
+                        } else {
+                            // 点击了地图区域，这里简化处理，获取鼠标点击的大致经纬度不容易直接获取
+                            // 暂如果不涉及具体点，就不做深度交互，或者取 geo 的中心
+                        }
+
+                        // 镜头推近
+                        myChart.setOption({
+                            geo: {
+                                center: center,
+                                zoom: 4,
+                                animationDurationUpdate: 1000,
+                                animationEasingUpdate: 'cubicInOut'
+                            }
+                        });
+
+                        document.getElementById('resetBtn').style.display = 'block';
+                    }
+                });
+
+                // 监听空白处点击重置
+                myChart.getZr().on('click', function (event) {
+                    if (!event.target) {
+                        // resetMap(); 
+                        // ECharts Zr 点击背景比较灵敏，这里先由按钮控制重置
+                    }
+                });
+
+            } catch (e) {
+                console.error('地图加载失败', e);
+            }
+
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        // 显示详情面板
+        function showDetail(data) {
+            const card = document.getElementById('detailCard');
+            const content = document.getElementById('cardContent');
+
+            let html = '';
+            if (data.status) { // 是项目
+                // 模拟该区域的项目统计
+                html = `
+                <div class="stat-row"><span class="stat-label">项目名称</span><span class="stat-val">${data.name}</span></div>
+                <div class="stat-row"><span class="stat-label">当前阶段</span><span style="color:${data.color}">${data.status}</span></div>
+                <div class="stat-row"><span class="stat-label">负责人</span><span class="stat-val">张工</span></div>
+                <div class="stat-row"><span class="stat-label">进度</span><span class="stat-val">正常推进中</span></div>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin:10px 0;">
+                <div style="font-size:12px; color:rgba(255,255,255,0.5)">该区域累计项目数：24</div>
+            `;
+            } else { // 是人员
+                html = `
+                <div class="stat-row"><span class="stat-label">姓名</span><span class="stat-val">${data.name}</span></div>
+                <div class="stat-row"><span class="stat-label">角色</span><span style="color:${data.itemStyle.color}">${data.role}</span></div>
+                <div class="stat-row"><span class="stat-label">当前位置</span><span class="stat-val">现场服务中</span></div>
+                <div class="stat-row"><span class="stat-label">联系方式</span><span class="stat-val">138****0000</span></div>
+            `;
+            }
+
+            content.innerHTML = html;
+            card.style.display = 'block';
+        }
+
+        function closeDetail() {
+            document.getElementById('detailCard').style.display = 'none';
+        }
+
+        // 重置地图
+        document.getElementById('resetBtn').addEventListener('click', function () {
+            myChart.setOption({
+                geo: {
+                    center: null, // 返回默认
+                    zoom: 1.2,
+                    animationDurationUpdate: 1000,
+                    animationEasingUpdate: 'cubicInOut'
+                }
+            });
+            this.style.display = 'none';
+            closeDetail();
+        });
+
+        // 筛选系列 toggle
+        function toggleSeries(name) {
+            myChart.dispatchAction({
+                type: 'legendToggleSelect',
+                name: name
+            });
+        }
+
+        initMap();
+    </script>
+</body>
+
+</html>

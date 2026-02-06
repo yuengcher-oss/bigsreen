@@ -1,0 +1,361 @@
+:root {
+    /* 颜色体系 - 极致深色主题 */
+    --bg-color: #0b0d11;
+    --primary-red: #e60012;
+    --secondary-blue: #0066ff;
+    --accent-gold: #ffcc00;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.45);
+
+    /* 玻璃拟态 */
+    --glass-bg: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --card-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+    --card-radius: 12px;
+
+    /* 字号规范 */
+    --font-size-h1: 18px;
+    --font-size-base: 14px;
+    --font-size-desc: 12px;
+    --font-size-min: 10px;
+    --font-size-highlight: 26px;
+
+    /* 字体 */
+    --font-main: 'Noto Sans SC', sans-serif;
+    --font-digit: 'Orbitron', sans-serif;
+
+    /* 间距 */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: #fff;
+    font-family: var(--font-main);
+    overflow: hidden;
+    /* 大屏通常不滚动 */
+    width: 100vw;
+    height: 100vh;
+    background-image:
+        radial-gradient(circle at 50% 50%, rgba(230, 0, 18, 0.1) 0%, transparent 70%),
+        linear-gradient(rgba(230, 0, 18, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(230, 0, 18, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 50px 50px, 50px 50px;
+    position: relative;
+}
+
+/* 全局手电筒光斑 */
+.spotlight {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%),
+            rgba(230, 0, 18, 0.08) 0%,
+            rgba(230, 0, 18, 0.03) 40%,
+            transparent 80%);
+    mix-blend-mode: screen;
+    transition: background 0.1s ease;
+}
+
+/* 容器适配 48:9 (5.33:1) */
+/* 在标准显示器上，我们保持这个比例，底部留白或背景填充 */
+.dashboard-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 40px;
+    gap: 10px;
+}
+
+/* 头部设计 - 集中式导航 */
+.main-header {
+    height: 65px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0;
+    position: relative;
+    margin-bottom: 0px; /* 消除额外边距，依靠 gap 控制 */
+    background: transparent;
+    z-index: 1000;
+}
+
+.nav-left,
+.nav-right {
+    display: flex;
+    gap: 6px;
+    margin-top: 5px; /* 微调对齐 */
+}
+
+.nav-left {
+    padding-right: 15px;
+}
+
+.nav-right {
+    padding-left: 15px;
+}
+
+.nav-item {
+    font-size: 1.25rem; /* 进一步增大菜单字号 */
+    cursor: pointer;
+    padding: 10px 40px; /* 相应增大内边距 */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: rgba(255, 255, 255, 0.85); /* 稍微增加文字亮度 */
+    white-space: nowrap;
+    background: rgba(15, 17, 21, 0.75);
+    border: 1px solid rgba(230, 0, 18, 0.3);
+    position: relative;
+    font-weight: 700; /* 加粗 */
+    letter-spacing: 2px; /* 增加字间距 */
+}
+
+.nav-left .nav-item {
+    clip-path: polygon(20px 0, 100% 0, calc(100% - 20px) 100%, 0 100%);
+    margin-right: -15px;
+}
+
+.nav-right .nav-item {
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 100%, 20px 100%);
+    margin-left: -15px;
+}
+
+.nav-item:hover {
+    background: rgba(230, 0, 18, 0.2);
+    color: #fff;
+    border-color: rgba(230, 0, 18, 0.7);
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.nav-item.active {
+    background: linear-gradient(180deg, rgba(230, 0, 18, 0.45) 0%, rgba(15, 17, 21, 0.85) 100%);
+    color: #fff;
+    border-color: var(--primary-red);
+    font-weight: bold;
+    box-shadow: 0 0 25px rgba(230, 0, 18, 0.25);
+}
+
+.nav-item.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 15px;
+    right: 15px;
+    height: 4px;
+    background: var(--primary-red);
+    box-shadow: 0 0 15px var(--primary-red);
+}
+
+.center-title {
+    position: relative;
+    padding: 0 100px;
+    height: 65px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(15, 17, 21, 0.9);
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 10% 100%);
+    border: 1px solid rgba(230, 0, 18, 0.4);
+    border-top: none;
+    min-width: 500px;
+    z-index: 10;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(230, 0, 18, 0.1);
+}
+
+.center-title::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--primary-red), var(--primary-red), transparent);
+    box-shadow: 0 0 15px var(--primary-red);
+}
+
+.center-title h1 {
+    font-size: 2.5rem; /* 进一步增大标题字号 */
+    font-weight: 900;
+    letter-spacing: 12px; /* 增加间距使其更震撼 */
+    margin: 0;
+    font-family: 'Orbitron', 'Noto Sans SC', sans-serif;
+    text-transform: uppercase;
+    
+    /* 更丰富的渐变效果 */
+    background: linear-gradient(180deg, 
+        #ffffff 0%, 
+        #ffffff 30%, 
+        var(--primary-red) 70%, 
+        #ff3344 85%,
+        #800000 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* 极致发光效果 */
+    filter: drop-shadow(0 0 15px rgba(230, 0, 18, 0.9))
+            drop-shadow(0 0 30px rgba(230, 0, 18, 0.4));
+    animation: titleGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from {
+        filter: drop-shadow(0 0 12px rgba(230, 0, 18, 0.7))
+                drop-shadow(0 0 25px rgba(230, 0, 18, 0.3));
+        transform: scale(1);
+    }
+    to {
+        filter: drop-shadow(0 0 20px rgba(230, 0, 18, 1))
+                drop-shadow(0 0 40px rgba(230, 0, 18, 0.6));
+        transform: scale(1.03);
+    }
+}
+
+/* 主内容区 3栏布局 */
+.content-area {
+    flex: 1;
+    display: flex;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    width: 100%;
+    height: 100%;
+}
+
+.panel-column {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.glass-card {
+    flex: 1;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--card-radius);
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--card-shadow);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(230, 0, 18, 0.2);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.glass-card:hover .card-title,
+.glass-card:hover .card-header h2 {
+    color: var(--primary-red);
+    text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+}
+
+.card-header {
+    padding: var(--space-sm) var(--space-md);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--text-primary); /* 改为白色 */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title::before {
+    content: '';
+    width: 4px;
+    height: 14px;
+    background: var(--primary-red);
+    border-radius: 2px;
+}
+
+.card-header h2 {
+    font-size: var(--font-size-h1);
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.card-body {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 文本工具类 */
+.text-desc {
+    font-size: var(--font-size-desc);
+    color: var(--text-secondary);
+}
+
+.text-min {
+    font-size: var(--font-size-min);
+    color: var(--text-muted);
+}
+
+.text-highlight {
+    font-size: var(--font-size-highlight);
+    font-family: var(--font-digit);
+    color: var(--accent-gold);
+    font-weight: 700;
+}
+
+.placeholder-content {
+    font-size: var(--font-size-base);
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+/* content content area takes rest of space */
+.content-area {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+    0% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.active-pulse {
+    animation: pulse 2s infinite ease-in-out;
+}

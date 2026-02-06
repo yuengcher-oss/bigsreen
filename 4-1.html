@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>制造引擎 - 4-1</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            gap: 20px;
+            background-color: var(--bg-color);
+        }
+
+        /* 左右两栏布局 */
+        .layout-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+            min-width: 0; /* 防止内容撑开 */
+        }
+
+        /* 覆盖 glass-card 基础样式以适应此页面 */
+        .glass-card {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0; /* 使用 layout-col 的 gap */
+        }
+
+        /* 标题带蓝色左边框 */
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            padding-left: 12px;
+            border-left: 4px solid #e60012;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        /* 顶部指标行 */
+        .metrics-row {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metrics-row:hover .metric-val,
+        .metrics-row:hover .metric-label {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .metric-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .metric-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 2px;
+            text-shadow: 0 0 15px rgba(230, 0, 18, 0.3);
+        }
+
+        .metric-val span {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: 4px;
+            font-weight: 400;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        /* 1. 能源消耗板块 */
+        .energy-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* 告警列表 */
+        .alert-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            table-layout: fixed;
+        }
+
+        .alert-table th {
+            text-align: left;
+            padding: 8px 6px;
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.02);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .alert-table td {
+            padding: 8px 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.9);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .status-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .status-processing {
+            color: #facc15;
+            background: rgba(250, 204, 21, 0.1);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        .status-done {
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        /* 统计表格 */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 10px;
+            table-layout: fixed;
+        }
+
+        .stats-table th {
+            color: rgba(255, 255, 255, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 6px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .stats-table td {
+            text-align: center;
+            padding: 8px 6px;
+            color: rgba(255, 255, 255, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* 2. TPM 设备卡片 */
+        .tpm-row {
+            display: flex;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .tpm-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            transition: all 0.3s ease;
+        }
+
+        .tpm-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(230, 0, 18, 0.3);
+        }
+
+        .tpm-card:hover .tpm-header {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .tpm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tpm-status-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .tpm-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 6px;
+            padding: 6px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+            font-size: 11px;
+            transition: all 0.3s ease;
+        }
+
+        .tpm-item.run {
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .tpm-item.idle {
+            border-color: rgba(250, 204, 21, 0.3);
+            color: #facc15;
+            background: rgba(250, 204, 21, 0.05);
+        }
+
+        .tpm-item.off {
+            border-color: rgba(148, 163, 184, 0.3);
+            color: #94a3b8;
+            background: rgba(148, 163, 184, 0.05);
+        }
+
+        .tpm-count {
+            font-family: 'Orbitron';
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .tpm-footer {
+            margin-top: 8px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: right;
+        }
+
+        /* 3. 光伏大卡片 */
+        .pv-cards {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .info-card {
+            flex: 1;
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .info-card:hover .card-title,
+        .info-card:hover .card-val {
+            color: var(--primary-red) !important;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .card-red {
+            background: linear-gradient(135deg, rgba(230, 0, 18, 0.15) 0%, rgba(230, 0, 18, 0.05) 100%);
+            border: 1px solid rgba(230, 0, 18, 0.3);
+        }
+
+        .card-orange {
+            background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 204, 0, 0.05) 100%);
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+
+        .card-blue {
+            background: linear-gradient(135deg, rgba(0, 102, 255, 0.15) 0%, rgba(0, 102, 255, 0.05) 100%);
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card-val {
+            font-family: 'Orbitron';
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+
+        /* 效益列表 */
+        .benefit-row {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .benefit-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .benefit-header {
+            margin-bottom: 15px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .benefit-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            justify-content: space-around;
+        }
+
+        .b-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            padding: 6px 0;
+        }
+
+        .b-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            margin-right: 15px;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .bg-blue {
+            background: rgba(0, 102, 255, 0.2);
+            color: #0066ff;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+
+        .bg-orange {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffcc00;
+            border: 1px solid rgba(255, 204, 0, 0.3);
+        }
+
+        .bg-green {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .bg-purple {
+            background: rgba(0, 102, 255, 0.2);
+            color: #0066ff;
+            border: 1px solid rgba(0, 102, 255, 0.3);
+        }
+
+        .b-val {
+            font-family: 'Orbitron';
+            font-size: 18px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* 发电折线图 */
+        #trendChart {
+            flex: 1;
+            width: 100%;
+            min-height: 140px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 左栏：能耗 + TPM -->
+    <div class="layout-col">
+        <!-- 1. 能源消耗 -->
+        <div class="glass-card" style="flex: 1.4;">
+            <div class="section-title">能源消耗</div>
+            <div class="metrics-row" id="energyMetrics"></div>
+
+            <div class="energy-grid">
+                <!-- 告警列表 -->
+                <div>
+                    <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-bottom:5px;">能源泄漏告警</div>
+                    <table class="alert-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">告警时间</th>
+                                <th style="width: 20%;">设备名称</th>
+                                <th style="width: 20%;">所属区域</th>
+                                <th style="width: 15%;">能源类型</th>
+                                <th style="width: 20%;">处理状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertBody"></tbody>
+                    </table>
+                </div>
+                <!-- 饼图 -->
+                <div style="position: relative;">
+                    <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-bottom:5px;">周能源占比</div>
+                    <div id="pieChart" style="width:100%; height:180px;"></div>
+                </div>
+            </div>
+
+            <!-- 吨耗统计 -->
+            <div style="margin-top:15px;">
+                <div style="font-size:12px; color:rgba(255,255,255,0.6); margin-bottom: 5px;">周分厂吨耗统计</div>
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">分厂名称</th>
+                            <th style="width: 15%;">成本(万元)</th>
+                            <th style="width: 15%;">产出(吨)</th>
+                            <th style="width: 18%;">水吨耗(t/吨)</th>
+                            <th style="width: 19%;">电吨耗(KWh/吨)</th>
+                            <th style="width: 18%;">气吨耗(m³/吨)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="statsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. TPM -->
+        <div class="glass-card" style="flex: 0.6;">
+            <div class="section-title">TPM设备管理系统 - 设备运行状态监控</div>
+            <div class="tpm-row" id="tpmRow"></div>
+        </div>
+    </div>
+
+    <!-- 右栏：光伏 -->
+    <div class="layout-col">
+        <!-- 3. 光伏发电 -->
+        <div class="glass-card" style="flex: 1.4;">
+            <div class="section-title">光伏发电</div>
+            <div class="metrics-row" id="pvMetrics"></div>
+
+            <div class="pv-cards" id="pvCards"></div>
+
+            <div class="benefit-row">
+                <!-- 社会效益 -->
+                <div class="benefit-box">
+                    <div class="benefit-header">社会效益</div>
+                    <div class="benefit-list" id="socialList"></div>
+                </div>
+                <!-- 经济效益 -->
+                <div class="benefit-box">
+                    <div class="benefit-header">经济效益</div>
+                    <div class="benefit-list" id="economicList"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" style="flex: 0.6;">
+            <div class="section-title">发电量趋势(kWh)</div>
+            <div id="trendChart" style="flex:1;"></div>
+        </div>
+    </div>
+
+    <script src="factory_data.js"></script>
+    <script>
+        // 渲染函数
+        function initRender() {
+            // 1. Energy Metrics
+            const emHTML = factoryData.energy.metrics.map(m => `
+                <div class="metric-item">
+                    <div class="metric-val">${m.value}<span>${m.unit}</span></div>
+                    <div class="metric-label">${m.label}</div>
+                </div>
+            `).join('');
+            document.getElementById('energyMetrics').innerHTML = emHTML;
+
+            // 2. Alerts
+            const alertHTML = factoryData.energy.alerts.map(a => `
+                <tr>
+                    <td>${a.time}</td>
+                    <td>${a.device}</td>
+                    <td>${a.area}</td>
+                    <td>${a.type}</td>
+                    <td><span class="status-badge ${a.status === '处理中' ? 'status-processing' : 'status-done'}">${a.status}</span></td>
+                </tr>
+            `).join('');
+            document.getElementById('alertBody').innerHTML = alertHTML;
+
+            // 3. Stats Table
+            const statsHTML = factoryData.energy.stats.map(s => `
+                <tr>
+                    <td>${s.name}</td>
+                    <td>${s.cost.toFixed(2)}</td>
+                    <td>${s.output.toFixed(3)}</td>
+                    <td>${s.water}</td>
+                    <td>${s.elec}</td>
+                    <td>${s.gas.toFixed(3)}</td>
+                </tr>
+            `).join('');
+            document.getElementById('statsBody').innerHTML = statsHTML;
+
+            // 4. TPM Cards
+            const tpmHTML = factoryData.tpm.map(t => `
+                <div class="tpm-card">
+                    <div class="tpm-header">
+                        <span>${t.name}</span>
+                        <span style="font-size:12px; border:1px solid #e60012; padding:0 4px; border-radius:2px;">采集率: ${t.rate}</span>
+                    </div>
+                    <div class="tpm-status-box">
+                        <div class="tpm-item run">
+                            <span>● 运行</span>
+                            <span class="tpm-count">${t.run}</span>
+                        </div>
+                        <div class="tpm-item idle">
+                            <span>● 待机</span>
+                            <span class="tpm-count">${t.idle}</span>
+                        </div>
+                        <div class="tpm-item off">
+                            <span>● 关机</span>
+                            <span class="tpm-count">${t.off}</span>
+                        </div>
+                    </div>
+                    <div class="tpm-footer">⏱ 日运行小时数: ${t.hours}</div>
+                </div>
+            `).join('');
+            document.getElementById('tpmRow').innerHTML = tpmHTML;
+
+            // 5. PV Metrics
+            const pmHTML = factoryData.pv.metrics.map(m => `
+                <div class="metric-item">
+                    <div class="metric-val">${m.value}<span>${m.unit}</span></div>
+                    <div class="metric-label">${m.label}</div>
+                </div>
+            `).join('');
+            document.getElementById('pvMetrics').innerHTML = pmHTML;
+
+            // 6. PV Cards
+            const pcHTML = factoryData.pv.cards.map((c, i) => {
+                const bgClass = i === 0 ? 'card-red' : (i === 1 ? 'card-orange' : 'card-blue');
+                return `
+                <div class="info-card ${bgClass}">
+                    <div class="card-title">${c.label}</div>
+                    <div class="card-val">${c.value}</div>
+                </div>
+                `;
+            }).join('');
+            document.getElementById('pvCards').innerHTML = pcHTML;
+
+            // 7. Benefits
+            const socHTML = factoryData.pv.social.map((b, i) => {
+                const colors = ['bg-blue', 'bg-orange', 'bg-green'];
+                const icons = ['CO2', '煤', '树'];
+                return `
+                <div class="b-item">
+                    <div style="display:flex; align-items:center;">
+                        <span class="b-icon ${colors[i]}">${icons[i]}</span>
+                        <span>${b.label}</span>
+                    </div>
+                    <span class="b-val">${b.value}</span>
+                </div>
+                `;
+            }).join('');
+            document.getElementById('socialList').innerHTML = socHTML;
+
+            const ecoHTML = factoryData.pv.economic.map((b, i) => {
+                const colors = ['bg-purple', 'bg-blue', 'bg-purple']; // Reuse purple for Money
+                return `
+                <div class="b-item">
+                    <div style="display:flex; align-items:center;">
+                        <span class="b-icon ${colors[i]}" style="font-family:serif;">¥</span>
+                        <span>${b.label}</span>
+                    </div>
+                    <span class="b-val">${b.value}</span>
+                </div>
+                `;
+            }).join('');
+            document.getElementById('economicList').innerHTML = ecoHTML;
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // Pie Chart
+            const pieChart = echarts.init(document.getElementById('pieChart'));
+            pieChart.setOption({
+                color: ['#e60012', '#0066ff', '#ffcc00'],
+                tooltip: { trigger: 'item' },
+                legend: { 
+                    top: 'middle', 
+                    right: '2%', 
+                    orient: 'vertical', 
+                    textStyle: { color: '#fff', fontSize: 10 },
+                    itemWidth: 10,
+                    itemHeight: 10,
+                    itemGap: 5
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['45%', '75%'],
+                    center: ['30%', '50%'],
+                    avoidLabelOverlap: true,
+                    label: { show: false },
+                    data: factoryData.energy.pieChart,
+                    itemStyle: {
+                        borderColor: '#000',
+                        borderWidth: 1
+                    }
+                }]
+            });
+
+            // Trend Chart
+            const trendChart = echarts.init(document.getElementById('trendChart'));
+            trendChart.setOption({
+                grid: { top: 20, right: 20, bottom: 20, left: 40, containLabel: true },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: factoryData.pv.trend.dates,
+                    axisLine: { lineStyle: { color: '#ffffff33' } },
+                    axisLabel: { color: '#ffffff80' }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: '#ffffff11' } },
+                    axisLabel: { color: '#ffffff80' }
+                },
+                series: [{
+                    data: factoryData.pv.trend.values,
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'none',
+                    lineStyle: { width: 3, color: '#e60012' },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(230, 0, 18, 0.3)' },
+                            { offset: 1, color: 'rgba(230, 0, 18, 0)' }
+                        ])
+                    }
+                }]
+            });
+
+            window.addEventListener('resize', () => {
+                pieChart.resize();
+                trendChart.resize();
+            });
+        }
+
+        initRender();
+        initCharts();
+    </script>
+</body>
+
+</html>

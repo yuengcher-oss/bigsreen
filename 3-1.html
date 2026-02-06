@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户业绩指标</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- 引入 ECharts -->
+    <script src="https://registry.npmmirror.com/echarts/5.5.0/files/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --card-bg: rgba(15, 17, 21, 0.95);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-red: #e60012;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --card-radius: 12px;
+        }
+
+        body {
+            background: transparent;
+            overflow: hidden;
+            padding: 10px;
+            font-family: 'Noto Sans SC', sans-serif;
+            color: #fff;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            gap: 15px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* 1. 顶部指标区域 */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            height: 120px;
+            flex-shrink: 0;
+        }
+
+        .metric-card {
+            background: rgba(230, 0, 18, 0.04);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(230, 0, 18, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+        }
+
+        .metric-card:hover {
+            background: rgba(230, 0, 18, 0.08);
+            border-color: rgba(230, 0, 18, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .metric-card:hover .metric-value,
+        .metric-card:hover .metric-unit,
+        .metric-card:hover .metric-label {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .metric-value {
+            font-family: var(--font-digit);
+            font-size: 28px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+            line-height: 1.2;
+        }
+
+        .metric-unit {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.45);
+            margin-left: 4px;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* 通用面板 */
+        .dark-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            font-size: 15px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 14px;
+            background: var(--primary-red);
+            border-radius: 2px;
+        }
+
+        /* 2. 近10年走势图 */
+        .trend-section {
+            height: 200px;
+            flex-shrink: 0;
+        }
+
+        /* 3. 产品规模 & 雷达图 */
+        .middle-row {
+            display: flex;
+            gap: 15px;
+            height: 220px;
+            flex-shrink: 0;
+        }
+
+        .product-scale-box {
+            flex: 1.5;
+        }
+
+        .radar-box {
+            flex: 1;
+        }
+
+        /* 4. Logo 墙 */
+        .logo-section {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-carousel-container {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 黑色透明遮罩：降低亮度并增加上下边缘羽化效果 */
+        .logo-carousel-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                rgba(15, 17, 21, 1) 0%,
+                rgba(15, 17, 21, 0.4) 15%,
+                rgba(15, 17, 21, 0.4) 85%,
+                rgba(15, 17, 21, 1) 100%
+            );
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .logo-item {
+            height: 40px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 5px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .logo-item img {
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            opacity: 1;
+            transition: all 0.3s;
+        }
+
+        .logo-item:hover img {
+            transform: scale(1.05);
+        }
+
+        @keyframes scroll-up {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-50%); }
+        }
+
+        .logo-vertical-track {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 12px;
+            padding: 10px;
+            animation: scroll-up 60s linear infinite;
+        }
+
+        .logo-vertical-track:hover {
+            animation-play-state: paused;
+        }
+
+        /* 中央红色色块 */
+        .central-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--primary-red);
+            padding: 25px 45px;
+            border-radius: 8px;
+            z-index: 10;
+            box-shadow: 0 10px 30px rgba(230, 0, 18, 0.4);
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            pointer-events: none; /* 让鼠标可以穿透到下层Logo */
+        }
+
+        .badge-text {
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="app">
+        <!-- 1. 顶部指标 -->
+        <div class="metrics-grid" id="metrics-grid">
+            <!-- 动态生成 -->
+        </div>
+
+        <!-- 2. 近10年装机量走势图 -->
+        <div class="dark-panel trend-section">
+            <div class="panel-title">近10年装机量走势图</div>
+            <div id="installedTrendChart" style="width: 100%; flex: 1;"></div>
+        </div>
+
+        <!-- 3. 产品规模与雷达图 -->
+        <div class="middle-row">
+            <div class="dark-panel product-scale-box">
+                <div class="panel-title">产品大类业务规模柱状图</div>
+                <div id="businessScaleChart" style="width: 100%; flex: 1;"></div>
+            </div>
+            <div class="dark-panel radar-box">
+                <div class="panel-title">全工况技术适应性</div>
+                <div id="radarChart" style="width: 100%; flex: 1;"></div>
+            </div>
+        </div>
+
+        <!-- 4. 客户 Logo 墙 -->
+        <div class="dark-panel logo-section">
+            <div class="panel-title">全球合作伙伴</div>
+            <div class="logo-carousel-container" id="logo-container">
+                <!-- 动态生成 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="market_data.js"></script>
+    <script>
+        // 1. 渲染指标
+        const renderMetrics = () => {
+            const container = document.getElementById('metrics-grid');
+            container.innerHTML = marketData.metrics.map(m => `
+                <div class="metric-card">
+                    <span class="metric-value">${m.value}<span class="metric-unit">${m.unit}</span></span>
+                    <span class="metric-label">${m.label}</span>
+                </div>
+            `).join('');
+        };
+
+        // 2. 初始化图表
+        const initCharts = () => {
+            // 通用配置
+            const commonLabel = { show: true, position: 'top', color: 'rgba(255,255,255,0.7)', fontSize: 10 };
+
+            // A. 近10年装机量走势图 (折线图)
+            const trendChart = echarts.init(document.getElementById('installedTrendChart'));
+            trendChart.setOption({
+                grid: { top: '20%', right: '3%', bottom: '15%', left: '5%', containLabel: true },
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: marketData.charts.installedCapacity.years,
+                    axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+                    axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 }
+                },
+                series: [{
+                    data: marketData.charts.installedCapacity.data,
+                    type: 'line',
+                    smooth: true,
+                    label: commonLabel,
+                    lineStyle: { color: '#e60012', width: 3 },
+                    itemStyle: { color: '#e60012' },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(230, 0, 18, 0.2)' },
+                            { offset: 1, color: 'transparent' }
+                        ])
+                    }
+                }]
+            });
+
+            // B. 产品大类业务规模 (柱状图)
+            const scaleChart = echarts.init(document.getElementById('businessScaleChart'));
+            scaleChart.setOption({
+                grid: { top: '15%', right: '3%', bottom: '15%', left: '5%', containLabel: true },
+                xAxis: {
+                    type: 'category',
+                    data: marketData.charts.businessScale.categories,
+                    axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10, interval: 0 }
+                },
+                yAxis: {
+                    type: 'value',
+                    splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }
+                },
+                series: [{
+                    data: marketData.charts.businessScale.data,
+                    type: 'bar',
+                    barWidth: '35%',
+                    label: commonLabel,
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#e60012' },
+                            { offset: 1, color: 'rgba(230, 0, 18, 0.1)' }
+                        ]),
+                        borderRadius: [4, 4, 0, 0]
+                    }
+                }]
+            });
+
+            // C. 雷达图
+            const radarChart = echarts.init(document.getElementById('radarChart'));
+            radarChart.setOption({
+                radar: {
+                    indicator: marketData.charts.radar.indicators,
+                    radius: '60%',
+                    axisName: { color: 'rgba(255,255,255,0.6)', fontSize: 10 },
+                    splitLine: { lineStyle: { color: 'rgba(255, 255, 255, 0.05)' } },
+                    splitArea: { show: false }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [{
+                        value: marketData.charts.radar.data,
+                        lineStyle: { color: '#ffcc00' },
+                        areaStyle: { color: 'rgba(255, 204, 0, 0.2)' }
+                    }]
+                }]
+            });
+
+            window.addEventListener('resize', () => {
+                trendChart.resize();
+                scaleChart.resize();
+                radarChart.resize();
+            });
+        };
+
+        // 3. 渲染 Logo 墙 (垂直向上滚动)
+        const renderLogos = () => {
+            const container = document.getElementById('logo-container');
+            const allLogos = marketData.logos;
+            
+            // 随机打乱数组
+            const shuffle = (array) => {
+                const newArray = [...array];
+                for (let i = newArray.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+                }
+                return newArray;
+            };
+
+            // 生成 Logo 列表 HTML
+            const generateLogosHtml = (logos) => {
+                return logos.map(logo => `
+                    <div class="logo-item" title="${logo.name}">
+                        <img src="${logo.path}" alt="${logo.name}">
+                    </div>
+                `).join('');
+            };
+
+            // 为了实现无缝向上滚动，我们需要两组内容
+            // 第一组内容打乱顺序
+            const set1 = shuffle(allLogos);
+            // 第二组内容也打乱顺序（可以和第一组一样，或者再次打乱）
+            const set2 = shuffle(allLogos);
+            // 再补一些确保填满
+            const set3 = shuffle(allLogos);
+            
+            const logosHtml = generateLogosHtml([...set1, ...set2, ...set3, ...set1, ...set2, ...set3]);
+
+            container.innerHTML = `
+                <div class="logo-vertical-track">
+                    ${logosHtml}
+                </div>
+                <div class="central-badge">
+                    <div class="badge-text">800+ 企业的共同选择</div>
+                </div>
+            `;
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderMetrics();
+            initCharts();
+            renderLogos();
+        });
+    </script>
+</body>
+
+</html>

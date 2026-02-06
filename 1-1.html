@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="shared/system.css">
+    <style>
+        body {
+            background: #050a10;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .page-container {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            width: 100vw;
+            padding: 20px;
+            /* 全局 padding 20px */
+            gap: 20px;
+            /* 大卡片间距 20px */
+            background:
+                radial-gradient(circle at 0% 0%, rgba(230, 0, 18, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(230, 0, 18, 0.08) 0%, transparent 50%);
+            box-sizing: border-box;
+        }
+
+        /* --- 顶部层级：集团背景与核心实力 --- */
+        .top-zone {
+            display: flex;
+            gap: 20px;
+            /* 大间距 20px */
+            align-items: stretch;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        /* 集团大楼照片面板 */
+        .building-panel {
+            flex: 0 0 240px;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .building-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9) contrast(1.1);
+            transition: transform 0.8s ease;
+        }
+
+        .building-panel:hover img {
+            transform: scale(1.05);
+        }
+
+        .overview-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            /* 垂直大间距 20px */
+            min-width: 0;
+        }
+
+        .brand-banner {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(90deg, rgba(255, 204, 0, 0.15), transparent);
+            padding: 15px 24px;
+            border-left: 6px solid var(--accent-gold);
+            border-radius: 4px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .brand-icon {
+            font-size: 38px;
+            filter: drop-shadow(0 0 12px var(--accent-gold));
+        }
+
+        .brand-title .main {
+            font-family: var(--font-digit);
+            font-size: 26px;
+            color: var(--accent-gold);
+            font-weight: 700;
+            display: block;
+            letter-spacing: 2px;
+        }
+
+        .brand-title .sub {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        .metrics-container {
+            display: flex;
+            gap: 20px;
+            /* 大间距 20px */
+            flex: 1;
+            min-height: 0;
+        }
+
+        .ranking-card {
+            flex: 0.7;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            /* 内部小间距 10px */
+        }
+
+        .ranking-card:hover {
+            border-color: rgba(230, 0, 18, 0.3);
+            background: rgba(230, 0, 18, 0.05);
+        }
+
+        .ranking-card:hover .ranking-item .val,
+        .ranking-card:hover .ranking-item {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .ranking-item .val {
+            font-family: var(--font-digit);
+            font-size: 18px;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            flex: 1.5;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            /* 小间距 10px */
+        }
+
+        .stat-card {
+            background: rgba(230, 0, 18, 0.04);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(230, 0, 18, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(230, 0, 18, 0.08);
+            border-color: rgba(230, 0, 18, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .stat-card:hover .value,
+        .stat-card:hover .unit,
+        .stat-card:hover .label {
+            color: var(--primary-red);
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 10%;
+            width: 80%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+        }
+
+        .stat-card .value {
+            font-family: var(--font-digit);
+            font-size: 28px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .stat-card .unit {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .stat-card .label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* --- 下部层级：川锅纪元时间轴 --- */
+        .bottom-zone {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            /* 全局 padding 20px */
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            /* 大间距 20px */
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timeline-header .title-group h2 {
+            font-size: 20px;
+            color: #fff;
+            letter-spacing: 4px;
+            font-weight: 700;
+            text-shadow: 0 0 15px rgba(230, 0, 18, 0.4);
+        }
+
+        .timeline-header .info-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .timeline-body {
+            flex: 1;
+            position: relative;
+            padding: 60px 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .timeline-main-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-50%);
+        }
+
+        .timeline-active-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--jianlong-red), var(--primary-red));
+            transform: translateY(-50%);
+            box-shadow: 0 0 15px var(--primary-red);
+            animation: growLine 3.5s ease-out forwards;
+        }
+
+        .nodes-flow {
+            display: flex;
+            justify-content: space-between;
+            height: 100%;
+            position: relative;
+            z-index: 10;
+            min-width: 1400px;
+            padding: 0 60px;
+        }
+
+        .history-node {
+            position: relative;
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node-anchor {
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border: 4px solid var(--jianlong-red);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 15px var(--jianlong-red);
+            z-index: 20;
+            transition: transform 0.3s ease;
+        }
+
+        .history-node:nth-child(even) .node-anchor {
+            border-color: var(--primary-red);
+            box-shadow: 0 0 15px var(--primary-red);
+        }
+
+        .history-node:hover .node-anchor {
+            transform: translateY(-50%) scale(1.4);
+        }
+
+        .event-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 12px;
+            width: 260px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+
+        .history-node:nth-child(odd) .event-card {
+            bottom: calc(50% + 40px);
+        }
+
+        .history-node:nth-child(even) .event-card {
+            top: calc(50% + 40px);
+        }
+
+        .history-node:hover .event-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(230, 0, 18, 0.4);
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        .history-node:nth-child(even):hover .event-card {
+            transform: translateX(-50%) translateY(10px);
+        }
+
+        .event-card .year {
+            font-family: var(--font-digit);
+            font-size: 22px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 12px;
+            color: var(--primary-red) !important;
+            text-shadow: 0 0 10px rgba(230, 0, 18, 0.3);
+        }
+
+        .history-node:nth-child(odd) .year {
+            color: var(--primary-red) !important;
+        }
+
+        .history-node:nth-child(even) .year {
+            color: var(--primary-red) !important;
+        }
+
+        /* 增加卡片与圆点之间的连线 */
+        .history-node::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--primary-red), transparent);
+            z-index: 5;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        .history-node:nth-child(odd)::before {
+            bottom: 50%;
+            height: 50px; /* 增加高度以连接到卡片 */
+            transform: translateX(-50%);
+            background: linear-gradient(to top, var(--primary-red), transparent);
+        }
+
+        .history-node:nth-child(even)::before {
+            top: 50%;
+            height: 50px; /* 增加高度以连接到卡片 */
+            transform: translateX(-50%);
+            background: linear-gradient(to bottom, var(--primary-red), transparent);
+        }
+
+        .history-node:hover::before {
+            opacity: 1;
+            height: 55px;
+            width: 3px;
+            box-shadow: 0 0 15px var(--primary-red);
+        }
+
+        .event-card .title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .event-card .desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            text-align: justify;
+        }
+
+        .event-card .desc-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .event-card .desc-list li {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 4px;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .event-card .desc-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+
+        @keyframes growLine {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 100%;
+            }
+        }
+
+        .domain-chips {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .chip {
+            font-size: 12px;
+            padding: 4px 14px;
+            background: rgba(230, 0, 18, 0.15);
+            border: 1px solid rgba(230, 0, 18, 0.3);
+            color: #fff;
+            border-radius: 20px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-container">
+        <!-- 顶部：核心实力展示 -->
+        <section class="top-zone">
+            <!-- 集团大楼照片区 -->
+            <div class="building-panel">
+                <img src="building.png" alt="集团大楼">
+            </div>
+
+            <div class="overview-panel">
+                <div class="brand-banner">
+                    <span class="brand-icon">🏆</span>
+                    <div class="brand-title">
+                        <span class="main">FORTUNE GLOBAL 500</span>
+                        <span class="sub">连续 5 年蝉联《财富》世界 500 强 · 卓越经营典范</span>
+                    </div>
+                </div>
+
+                <div class="metrics-container">
+                    <div class="ranking-card">
+                        <div class="ranking-item"><span>中国民营钢铁企业</span> <span class="val">NO.2</span></div>
+                        <div class="ranking-item"><span>全球钢铁企业排名</span> <span class="val">NO.8</span></div>
+                        <div class="ranking-item"><span>中国钢铁企业排名</span> <span class="val">NO.5</span></div>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="value">4300<span class="unit">万吨</span></span>
+                            <span class="label">年钢铁产能</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="value">70<span class="unit">亿吨</span></span>
+                            <span class="label">铁矿资源储备</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="value">60,000<span class="unit">+</span></span>
+                            <span class="label">全球精英员工总数</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="domain-chips">
+                    <span class="chip">钢铁工业</span>
+                    <span class="chip">资源产业</span>
+                    <span class="chip">船运物流</span>
+                    <span class="chip">现代服务</span>
+                    <span class="chip">机电装备</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- 下部：完整横向时间轴 -->
+        <section class="bottom-zone">
+            <div class="timeline-header">
+                <div class="title-group">
+                    <h2>五十八载峥嵘岁月</h2>
+                </div>
+                <div class="info-text">
+                    始建于1968年 · 拥有50余年历史 · 行业领先的蒸汽锅炉设计及制造商
+                </div>
+            </div>
+
+            <div class="timeline-body hide-scrollbar">
+                <div class="timeline-main-line"></div>
+                <div class="timeline-active-line"></div>
+
+                <div class="nodes-flow">
+                    <!-- 1968 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">1968年</span>
+                            <div class="title">诞生：军工起源</div>
+                            <p class="desc">军工企业-东方红机械厂。源于东锅、武锅的军工板块，为核潜艇生产压力容器。</p>
+                        </div>
+                    </div>
+
+                    <!-- 1980 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">1980年</span>
+                            <div class="title">转型：锅炉制造</div>
+                            <p class="desc">开始制造锅炉和压力容器。成为中国中小型锅炉最重要的制造商。1990年开发首台CFB锅炉。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2008 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2008年</span>
+                            <div class="title">融合：强强联手</div>
+                            <p class="desc">北京建龙集团收购川锅。拥有完整的研发、设计、制造能力，开启数字化篇章。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2016 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2016年</span>
+                            <div class="title">突破：海拔之巅</div>
+                            <p class="desc">全球最高海拔（4273米）煤粉炉投运。全球首台超高压高炉煤气发电锅炉。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2018 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2018年</span>
+                            <div class="title">卓越：创新中心</div>
+                            <p class="desc">国地联合工程研究中心成立。成为中国中小锅炉领军企业，国家级示范企业。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2021 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2021年</span>
+                            <div class="title">智造：优秀场景</div>
+                            <p class="desc">锅炉领域首个国家级智能制造场景。成都市十佳工业互联网场景，创新实力获评。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2023 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2023年</span>
+                            <div class="title">硕果：成果涌现</div>
+                            <p class="desc">创新成果爆发，打造19个行业领先技术产品。入选四川省贡嘎培优计划。</p>
+                        </div>
+                    </div>
+
+                    <!-- 2024 -->
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">2024年</span>
+                            <div class="title">巅峰：全球跨越</div>
+                            <p class="desc">签约额创历史新高，海外占比破1/4。在冶金、化工、固废三大领域齐头并进。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="timeline_data.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTimelineData();
+        });
+
+        function loadTimelineData() {
+            const container = document.querySelector('.nodes-flow');
+            if (!container) return;
+
+            // 读取 timeline_data.js 中定义的全局数据
+            const nodes = window.timelineData;
+
+            if (nodes && Array.isArray(nodes)) {
+                renderTimeline(nodes, container);
+            } else {
+                console.error('时间轴数据未加载或格式错误');
+            }
+        }
+
+        function renderTimeline(nodes, container) {
+            if (nodes.length === 0) return;
+
+            container.innerHTML = ''; // 清空占位符
+
+            nodes.forEach((node, index) => {
+                // 如果描述中包含分号或多个句号，尝试分行显示
+                let descHtml = '';
+                const sentences = node.desc.split(/[；。]/).filter(s => s.trim());
+                if (sentences.length > 1) {
+                    descHtml = `<ul class="desc-list">${sentences.map(s => `<li>${s.trim()}</li>`).join('')}</ul>`;
+                } else {
+                    descHtml = `<p class="desc">${node.desc}</p>`;
+                }
+
+                const nodeHtml = `
+                    <div class="history-node">
+                        <div class="node-anchor"></div>
+                        <div class="event-card">
+                            <span class="year">${node.year}</span>
+                            <div class="title">${node.title}</div>
+                            ${descHtml}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', nodeHtml);
+            });
+        }
+    </script>
+</body>
+
+</html>
