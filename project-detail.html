@@ -2723,33 +2723,25 @@
                                                 shape: { width: 40, height: 40, r: 4 },
                                                 style: { fill: 'rgba(30, 35, 45, 0.9)', stroke: 'rgba(255, 255, 255, 0.15)', lineWidth: 1, shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' }
                                             },
-                                            // 靶心图标
+                                            // 靶心图标 - 显式定位到 20, 20
                                             {
                                                 type: 'circle',
-                                                left: 'center',
-                                                top: 'middle',
-                                                shape: { r: 8 },
+                                                shape: { cx: 20, cy: 20, r: 8 },
                                                 style: { fill: 'none', stroke: '#fff', lineWidth: 1.5 }
                                             },
                                             {
                                                 type: 'circle',
-                                                left: 'center',
-                                                top: 'middle',
-                                                shape: { r: 3 },
+                                                shape: { cx: 20, cy: 20, r: 3 },
                                                 style: { fill: '#fff' }
                                             },
                                             {
                                                 type: 'line',
-                                                shape: { x1: 0, y1: -12, x2: 0, y2: 12 },
-                                                left: 'center',
-                                                top: 'middle',
+                                                shape: { x1: 20, y1: 8, x2: 20, y2: 32 },
                                                 style: { stroke: '#fff', lineWidth: 1.5 }
                                             },
                                             {
                                                 type: 'line',
-                                                shape: { x1: -12, y1: 0, x2: 12, y2: 0 },
-                                                left: 'center',
-                                                top: 'middle',
+                                                shape: { x1: 8, y1: 20, x2: 32, y2: 20 },
                                                 style: { stroke: '#fff', lineWidth: 1.5 }
                                             }
                                         ]
@@ -2770,9 +2762,9 @@
                                             },
                                             {
                                                 type: 'text',
-                                                left: 'center',
-                                                top: 'middle',
-                                                style: { text: '+', font: '30px sans-serif', fill: '#fff' }
+                                                left: 20,
+                                                top: 20,
+                                                style: { text: '+', font: '30px sans-serif', fill: '#fff', textAlign: 'center', textVerticalAlign: 'middle' }
                                             }
                                         ]
                                     },
@@ -2792,9 +2784,9 @@
                                             },
                                             {
                                                 type: 'text',
-                                                left: 'center',
-                                                top: 'middle',
-                                                style: { text: '-', font: '30px sans-serif', fill: '#fff' }
+                                                left: 20,
+                                                top: 20,
+                                                style: { text: '-', font: '30px sans-serif', fill: '#fff', textAlign: 'center', textVerticalAlign: 'middle' }
                                             }
                                         ]
                                     }
