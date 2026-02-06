@@ -30,7 +30,7 @@
             background-size: 100% 100%, 100px 100px, 100px 100px;
         }
 
-        /* 头部布局重新设计：清爽简洁 */
+        /* 头部布局新设计：清爽简洁 */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -214,13 +214,16 @@
             grid-template-columns: 1fr 1fr 1fr;
             height: 100%;
             gap: 25px;
-            padding: 0 25px 25px 25px;
+            padding: 0 30px 30px 30px;
+            display: flex;
+            min-height: 0;
+            overflow: hidden;
         }
 
         /* 每一屏的容器 */
         .panel-column {
             height: 100%;
-            padding: 10px; /* 统一内部间距 */
+            padding: 0px; /* 统一内部间距 */
             display: flex;
             flex-direction: column;
             border-right: 1px solid rgba(255, 255, 255, 0.05);
@@ -474,22 +477,27 @@
         .img-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr;
             gap: 15px;
-            height: 500px;
+            flex: 1;
+            min-height: 0;
         }
 
         .img-box {
             height: 100%; /* 高度由 grid 容器决定 */
+            width: 100%;
+            min-height: 0;
         }
 
         .real-img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
         }
 
         .diagram-container {
-            height: 400px;
+            flex: 1;
+            min-height: 0;
             display: flex;
             gap: 20px;
         }
@@ -524,11 +532,13 @@
         /* Tab 切换逻辑样式 */
         .tab-pane {
             display: none;
-            min-height: 100%;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
         }
 
         .tab-pane.active {
-            display: block;
+            display: flex;
         }
 
         /* 设计 Tab 专用样式 */
@@ -536,8 +546,10 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr; /* 三栏均分 */
             gap: 25px;
-            padding: 0 25px 25px 25px;
+            padding: 0 30px 30px 30px;
             height: 100%;
+            min-height: 0;
+            overflow: hidden;
         }
 
         /* 设计进度面板 (左侧) */
@@ -545,12 +557,11 @@
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--card-radius);
-            padding: 20px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             gap: 15px;
-            height: 75vh;
-            min-height: 650px;
+            height: 100%;
             overflow: hidden;
         }
 
@@ -559,13 +570,12 @@
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--card-radius);
-            padding: 20px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             gap: 15px;
             position: relative;
-            height: 75vh;
-            min-height: 650px;
+            height: 100%;
         }
 
         /* CAD 容器优化 - 填满剩余空间 */
@@ -597,8 +607,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 75vh;
-            min-height: 650px;
+            height: 100%;
         }
 
         /* 总图号 Tab 栏 */
@@ -1245,10 +1254,11 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1.2fr; /* 右侧稍微宽一点 */
             gap: 25px;
-            padding: 0 25px 25px 25px;
+            padding: 0 30px 30px 30px;
             flex: 1; /* 弹性高度 */
-            height: auto; /* 允许根据内容或父容器伸缩 */
+            height: 100%; /* 填满父容器 */
             min-height: 0; /* 防止 grid 溢出 */
+            overflow: hidden; /* 确保内容在内部滚动 */
         }
 
         .supplier-panel {
@@ -1340,6 +1350,83 @@
         
         .supplier-table tr:hover td {
             background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 地图自定义标记样式 */
+        #map-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 让鼠标事件穿透到地图 */
+            z-index: 10;
+            overflow: hidden; /* 防止溢出 */
+        }
+
+        .map-marker {
+            position: absolute;
+            transform: translate(-50%, -100%); /* 定位到底部中心 */
+            margin-top: -15px; /* 上移一点 */
+            pointer-events: auto; /* 允许交互 */
+            /* 移除 transition 以获得更好的跟手性，或者使用极其短的时间 */
+        }
+
+        .marker-content {
+            background-color: rgba(0, 20, 40, 0.85);
+            border: 1px solid #409eff;
+            border-radius: 4px;
+            padding: 0;
+            width: 200px;
+            height: 140px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(4px);
+        }
+
+        .marker-title {
+            color: #fff;
+            font-size: 12px;
+            text-align: center;
+            padding: 6px 0;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(64, 158, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .marker-live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #67c23a;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 5px #67c23a;
+            animation: marker-pulse 1.5s infinite ease-in-out;
+        }
+
+        .marker-live-text {
+            color: #67c23a;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .marker-video {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            margin: 4px;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        @keyframes marker-pulse {
+            0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(103, 194, 58, 0.7); }
+            70% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 10px 6px rgba(103, 194, 58, 0); }
+            100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(103, 194, 58, 0); }
         }
     </style>
 </head>
@@ -1842,7 +1929,7 @@
 
                 <!-- 右侧：图纸预览器 -->
                 <div class="drawing-viewer-panel">
-                    <div style="padding: 25px 25px 0 25px;">
+                    <div style="padding: 30px 30px 0 30px;">
                         <div class="section-title">图纸查看器</div>
                     </div>
                     <div class="viewer-header-tabs" id="generalDrawingTabs">
@@ -1866,6 +1953,7 @@
                 <div class="supplier-panel">
                     <div class="section-title">供应商分布</div>
                     <div class="supplier-map-box" id="supplierMap">
+                        <div id="map-markers"></div>
                         <!-- 地图容器，后续集成 ECharts -->
                         <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); text-align: center;">
                             <div style="font-size: 40px; margin-bottom: 10px;">🗺️</div>
@@ -1904,6 +1992,12 @@
                 <!-- 右侧：合同列表 -->
                 <div class="supplier-panel">
                     <div class="section-title">合同执行详情</div>
+                    <div class="sub-tabs-nav" id="contractListTabs">
+                        <div class="sub-tab-item active" data-type="subcontract">分包</div>
+                        <div class="sub-tab-item" data-type="metal">金属</div>
+                        <div class="sub-tab-item" data-type="accessory">辅料</div>
+                        <div class="sub-tab-item" data-type="matching">配套</div>
+                    </div>
                     <div class="supplier-table-container">
                         <table class="supplier-table" id="contractListTable">
                             <thead>
@@ -2535,21 +2629,29 @@
                     ]
                 };
 
-                const contracts = [
-                    { id: 1, project: '耿弘信润', order: '1310002', supplier: '成都天一机械有限公司', contract: '2024-354(补)', signDate: '2024-11-06', planDate: '2024-11-10', actDate: '--', component: '大风箱及桁架', category: '其他', weight: '14.519', shipped: '14.498', unshipped: '0.021', op: '详情' },
-                    { id: 2, project: '济源天龙', order: '410482', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-333(补)', signDate: '2024-11-01', planDate: '2024-12-31', actDate: '--', component: '钢结构', category: '钢结构', weight: '67.279', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 3, project: '新疆天池', order: '1240036', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
-                    { id: 4, project: '新疆天池', order: '1240037', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
-                    { id: 5, project: '新疆天池', order: '1240038', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
-                    { id: 6, project: '新疆天池', order: '1240039', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
-                    { id: 7, project: '济源天龙', order: '410482', supplier: '烟台百信钢结构股份有限公司', contract: '2024-334(补)', signDate: '2024-11-01', planDate: '2024-11-30', actDate: '--', component: '钢格板、扶梯', category: '钢格板', weight: '41.392', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 8, project: '济源天龙', order: '410482', supplier: '山东博宇重工科技集团有限公司', contract: '2024-342(补)', signDate: '2024-10-31', planDate: '2025-01-10', actDate: '--', component: '空预器管箱', category: '空预器', weight: '102.063', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 9, project: '广西华昇', order: '2024276', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-339(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置配件', category: '固定、密封', weight: '0.254', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 10, project: '耿弘信润', order: '1310002', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 11, project: '耿弘信润', order: '1310003', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 12, project: '广西华昇', order: '2024227', supplier: '扬州荣成机械有限公司', contract: '2024-331(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: '钢板', category: '其他', weight: '0.127', shipped: 'null', unshipped: 'null', op: '详情' },
-                    { id: 13, project: '吉林石化', order: '2024162', supplier: '扬州荣成机械有限公司', contract: '2024-332(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: 'U型螺栓', category: '其他', weight: '0.401', shipped: 'null', unshipped: 'null', op: '详情' }
-                ];
+                const contracts = {
+                    'subcontract': [
+                        { id: 2, project: '济源天龙', order: '410482', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-333(补)', signDate: '2024-11-01', planDate: '2024-12-31', actDate: '--', component: '钢结构', category: '钢结构', weight: '67.279', shipped: 'null', unshipped: 'null', op: '详情' },
+                        { id: 3, project: '新疆天池', order: '1240036', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                        { id: 4, project: '新疆天池', order: '1240037', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                        { id: 5, project: '新疆天池', order: '1240038', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                        { id: 6, project: '新疆天池', order: '1240039', supplier: '四川省中江县银淇钢结构有限公司', contract: '2024-335(补)', signDate: '2024-11-01', planDate: '2024-11-10', actDate: '2024-11-06', component: '地脚螺栓', category: '钢结构', weight: '3.889', shipped: '3.889', unshipped: '0', op: '详情' },
+                        { id: 7, project: '济源天龙', order: '410482', supplier: '烟台百信钢结构股份有限公司', contract: '2024-334(补)', signDate: '2024-11-01', planDate: '2024-11-30', actDate: '--', component: '钢格板、扶梯', category: '钢格板', weight: '41.392', shipped: 'null', unshipped: 'null', op: '详情' }
+                    ],
+                    'metal': [
+                        { id: 12, project: '广西华昇', order: '2024227', supplier: '扬州荣成机械有限公司', contract: '2024-331(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: '钢板', category: '其他', weight: '0.127', shipped: 'null', unshipped: 'null', op: '详情' },
+                        { id: 13, project: '吉林石化', order: '2024162', supplier: '扬州荣成机械有限公司', contract: '2024-332(补)', signDate: '2024-10-16', planDate: '2024-10-25', actDate: '--', component: 'U型螺栓', category: '其他', weight: '0.401', shipped: 'null', unshipped: 'null', op: '详情' }
+                    ],
+                    'accessory': [
+                        { id: 8, project: '济源天龙', order: '410482', supplier: '山东博宇重工科技集团有限公司', contract: '2024-342(补)', signDate: '2024-10-31', planDate: '2025-01-10', actDate: '--', component: '空预器管箱', category: '空预器', weight: '102.063', shipped: 'null', unshipped: 'null', op: '详情' },
+                        { id: 9, project: '广西华昇', order: '2024276', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-339(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置配件', category: '固定、密封', weight: '0.254', shipped: 'null', unshipped: 'null', op: '详情' },
+                        { id: 10, project: '耿弘信润', order: '1310002', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' },
+                        { id: 11, project: '耿弘信润', order: '1310003', supplier: '四川川锅科泰达能源技术有限公司', contract: '2024-340(补)', signDate: '2024-10-29', planDate: '2024-10-31', actDate: '--', component: '吊挂装置', category: '固定、密封', weight: '0.859', shipped: 'null', unshipped: 'null', op: '详情' }
+                    ],
+                    'matching': [
+                        { id: 1, project: '耿弘信润', order: '1310002', supplier: '成都天一机械有限公司', contract: '2024-354(补)', signDate: '2024-11-06', planDate: '2024-11-10', actDate: '--', component: '大风箱及桁架', category: '其他', weight: '14.519', shipped: '14.498', unshipped: '0.021', op: '详情' }
+                    ]
+                };
 
                 // 渲染表格函数
                 function renderTable(tableId, data) {
@@ -2615,8 +2717,7 @@
                 }
 
                 setupTabs('supplierListTabs', 'supplierListTable', suppliers);
-                // 合同列表不再需要 Tabs 切换，直接渲染全部数据
-                renderTable('contractListTable', contracts);
+                setupTabs('contractListTabs', 'contractListTable', contracts);
                 
                 // 初始化地图
                 initSupplierMap();
@@ -2674,12 +2775,125 @@
 
                     const option = {
                         backgroundColor: 'transparent',
+                        // 添加 ECharts 内置的漫游缩放组件 (需要 echarts 5.x 支持)
+                        // 注意：geo.roam 已经开启了鼠标缩放，这里添加界面按钮
+                        graphic: [
+                            {
+                                type: 'group',
+                                right: 30,
+                                bottom: 30,
+                                children: [
+                                    // 恢复默认按钮
+                                    {
+                                        type: 'group',
+                                        top: 0,
+                                        onclick: function () {
+                                            chart.setOption({
+                                                geo: {
+                                                    center: [105, 38],
+                                                    zoom: 4
+                                                }
+                                            });
+                                        },
+                                        children: [
+                                            {
+                                                type: 'rect',
+                                                shape: { width: 40, height: 40, r: 4 },
+                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                            },
+                                            {
+                                                type: 'path',
+                                                shape: {
+                                                    pathData: 'M512 85.333333c235.648 0 426.666667 191.018667 426.666667 426.666667s-191.018667 426.666667-426.666667 426.666667S85.333333 747.648 85.333333 512 276.352 85.333333 512 85.333333z m0 64C311.722667 149.333333 149.333333 311.722667 149.333333 512s162.389333 362.666667 362.666667 362.666667 362.666667-162.389333 362.666667-362.666667S712.277333 149.333333 512 149.333333z m0 170.666667c106.026667 0 192 85.973333 192 192s-85.973333 192-192 192-192-85.973333-192-192 85.973333-192 192-192z',
+                                                    width: 24,
+                                                    height: 24,
+                                                    x: -12,
+                                                    y: -12
+                                                },
+                                                left: 'center',
+                                                top: 'middle',
+                                                style: { fill: '#666' }
+                                            }
+                                        ]
+                                    },
+                                    // 放大按钮
+                                    {
+                                        type: 'group',
+                                        top: 45,
+                                        onclick: function () {
+                                            const currentZoom = chart.getOption().geo[0].zoom;
+                                            chart.setOption({ geo: { zoom: currentZoom * 1.5 } });
+                                        },
+                                        children: [
+                                            {
+                                                type: 'rect',
+                                                shape: { width: 40, height: 40, r: 4 },
+                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                            },
+                                            {
+                                                type: 'path',
+                                                shape: {
+                                                    pathData: 'M853.333333 469.333333h-298.666666v-298.666666c0-23.466667-19.2-42.666667-42.666667-42.666667s-42.666667 19.2-42.666667 42.666667v298.666666h-298.666666c-23.466667 0-42.666667 19.2-42.666667 42.666667s19.2 42.666667 42.666667 42.666667h298.666666v298.666666c0 23.466667 19.2 42.666667 42.666667 42.666667s42.666667-19.2 42.666667-42.666667v-298.666666h298.666666c23.466667 0 42.666667-19.2 42.666667-42.666667s-19.2-42.666667-42.666667-42.666667z',
+                                                    width: 24,
+                                                    height: 24,
+                                                    x: -12,
+                                                    y: -12
+                                                },
+                                                left: 'center',
+                                                top: 'middle',
+                                                style: { fill: '#666' }
+                                            }
+                                        ]
+                                    },
+                                    // 缩小按钮
+                                    {
+                                        type: 'group',
+                                        top: 90,
+                                        onclick: function () {
+                                            const currentZoom = chart.getOption().geo[0].zoom;
+                                            chart.setOption({ geo: { zoom: currentZoom * 0.7 } });
+                                        },
+                                        children: [
+                                            {
+                                                type: 'rect',
+                                                shape: { width: 40, height: 40, r: 4 },
+                                                style: { fill: '#fff', shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' }
+                                            },
+                                            {
+                                                type: 'path',
+                                                shape: {
+                                                    pathData: 'M853.333333 469.333333h-768c-23.466667 0-42.666667 19.2-42.666667 42.666667s19.2 42.666667 42.666667 42.666667h768c23.466667 0 42.666667-19.2 42.666667-42.666667s-19.2-42.666667-42.666667-42.666667z',
+                                                    width: 24,
+                                                    height: 24,
+                                                    x: -12,
+                                                    y: -12
+                                                },
+                                                left: 'center',
+                                                top: 'middle',
+                                                style: { fill: '#666' }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        tooltip: {
+                            trigger: 'item',
+                            backgroundColor: 'rgba(0,0,0,0.8)',
+                            borderColor: '#e60012',
+                            textStyle: {
+                                color: '#fff'
+                            },
+                            formatter: function (params) {
+                                return params.name;
+                            }
+                        },
                         // 调整地图视口以聚焦中国区域
                         geo: {
                             map: 'world',
                             roam: true,
                             center: [105, 38], // 中心点设在中国
-                            zoom: 3, // 放大倍数
+                            zoom: 8, // 放大默认比例
                             emphasis: { label: { show: false } },
                             itemStyle: {
                                 areaColor: 'rgba(0, 40, 80, 0.4)',
@@ -2731,22 +2945,28 @@
                                 coordinateSystem: 'geo',
                                 zlevel: 3,
                                 rippleEffect: { brushType: 'stroke', scale: 3 },
-                                label: {
-                                    show: true,
-                                    position: 'right',
-                                    formatter: '{b}',
-                                    color: 'rgba(255,255,255,0.7)',
-                                    fontSize: 10
-                                },
+                                label: { show: false }, // 禁用默认 label，使用 HTML 覆盖层
                                 itemStyle: {
                                     color: function(params) {
                                         return params.name === '新疆哈密(项目地)' ? '#e60012' : '#409eff';
                                     }
                                 },
                                 data: Object.keys(geoCoordMap).map(name => {
+                                    const isProject = name === '新疆哈密(项目地)';
                                     return {
                                         name: name,
-                                        value: geoCoordMap[name].concat([100])
+                                        value: geoCoordMap[name].concat([100]),
+                                        label: isProject ? {
+                                            show: true,
+                                            position: 'right',
+                                            formatter: '{b}',
+                                            color: '#e60012',
+                                            fontSize: 14,
+                                            fontWeight: 'bold',
+                                            backgroundColor: 'rgba(0,0,0,0.5)',
+                                            padding: [4, 8],
+                                            borderRadius: 4
+                                        } : { show: false }
                                     };
                                 })
                             }
@@ -2754,7 +2974,66 @@
                     };
 
                     chart.setOption(option);
-                    window.addEventListener('resize', () => chart.resize());
+                    
+                    // ==========================================
+                    // HTML 标记覆盖层逻辑 (实现呼吸灯效果)
+                    // ==========================================
+                    const markerContainer = document.getElementById('map-markers');
+                    const mockImgs = {
+                        '成都天一': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo5ZDYfKc62TTFCKc7jGpBKHatI1bv-882MQ&s',
+                        '银淇钢结构': 'https://www.wxzhouxiang.com/UploadFiles/FCK/2016-08/6360704423887500006618133.jpg',
+                        '烟台百信': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
+                        '山东博宇': 'https://xtdsteel.com/wp-content/uploads/2025/08/steel-structure-bridges-analysis-1.jpg',
+                        '川锅科泰达': 'https://www.wxzhouxiang.com/uploadfiles/pictures/product/20240117122603_9878.jpg',
+                        '扬州荣成': 'https://static.thefabricator.com/a/automated-fitting-and-welding-becomes-reality-in-structural-steel-fabrication-1522760902.jpg?size=1000x'
+                    };
+
+                    function updateMarkers() {
+                        markerContainer.innerHTML = '';
+                        // 获取供应商数据 (series index 2)
+                        const supplierData = option.series[2].data;
+                        
+                        supplierData.forEach(item => {
+                            // 跳过项目地，只处理供应商
+                            if (item.name === '新疆哈密(项目地)') return;
+                            
+                            const coords = item.value.slice(0, 2);
+                            // 转换为像素坐标
+                            const pixel = chart.convertToPixel('geo', coords);
+                            
+                            if (pixel) {
+                                const div = document.createElement('div');
+                                div.className = 'map-marker';
+                                div.style.left = pixel[0] + 'px';
+                                div.style.top = pixel[1] + 'px';
+                                
+                                const imgUrl = mockImgs[item.name] || 'https://minio-api.cgboiler.com/form-test/group%201.png';
+                                
+                                div.innerHTML = `
+                                    <div class="marker-content">
+                                        <div class="marker-title">
+                                            ${item.name}
+                                            <span class="marker-live-dot"></span>
+                                            <span class="marker-live-text">实时监控</span>
+                                        </div>
+                                        <div class="marker-video" style="background-image: url('${imgUrl}')"></div>
+                                    </div>
+                                `;
+                                markerContainer.appendChild(div);
+                            }
+                        });
+                    }
+
+                    // 初始渲染及事件绑定
+                    // 稍微延迟确保地图坐标系已准备好
+                    setTimeout(updateMarkers, 50);
+                    
+                    chart.on('georoam', updateMarkers);
+                    
+                    window.addEventListener('resize', () => {
+                        chart.resize();
+                        updateMarkers();
+                    });
                     
                 } catch (e) {
                     console.error('Map loading failed', e);
