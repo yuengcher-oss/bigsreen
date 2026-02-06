@@ -362,15 +362,55 @@ body {
 
 /* 数字人交互样式 */
 .highlight-btn {
-    border-color: var(--accent-gold);
+    height: 40px;
+    padding: 0 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.15) 0%, rgba(255, 153, 0, 0.05) 100%);
+    border: 1px solid rgba(255, 204, 0, 0.5);
+    border-radius: 20px;
     color: var(--accent-gold);
-    background: rgba(255, 204, 0, 0.1);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-left: 20px;
+    margin-top: 10px;
+    letter-spacing: 1px;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
+    position: relative;
+    overflow: hidden;
 }
 
-.highlight-btn:hover,
+.highlight-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 204, 0, 0.1) 0%, transparent 70%);
+    transform: scale(0);
+    transition: transform 0.6s ease-out;
+}
+
+.highlight-btn:hover {
+    background: rgba(255, 204, 0, 0.25);
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 25px rgba(255, 204, 0, 0.3);
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
+}
+
+.highlight-btn:hover::before {
+    transform: scale(1);
+}
+
 .highlight-btn.active {
-    background: rgba(255, 204, 0, 0.2);
-    box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+    background: var(--accent-gold);
+    color: #000;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.5);
 }
 
 .digital-human-container {
@@ -378,7 +418,7 @@ body {
     height: 100%;
     overflow: hidden;
     transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
-    background: linear-gradient(90deg, 
+    background: linear-gradient(180deg, 
         rgba(15, 17, 21, 0.95) 0%,
         rgba(15, 17, 21, 0.8) 100%);
     border-right: 1px solid rgba(255, 204, 0, 0.2);
@@ -387,6 +427,7 @@ body {
     align-items: center;
     position: relative;
     opacity: 0;
+    padding-top: 40px; /* 给对话框留出顶部空间 */
 }
 
 .digital-human-container.active {
@@ -397,42 +438,47 @@ body {
 
 .human-placeholder {
     width: 100%;
-    height: 60%;
+    flex: 1; /* 占据剩余空间 */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end; /* 人物贴底 */
     position: relative;
+    margin-top: auto;
 }
 
 .avatar-img {
-    width: 80%;
-    height: auto;
-    filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.4));
+    max-width: 100%;
+    height: 90%; /* 稍微缩小一点以适应容器 */
+    object-fit: contain;
+    filter: drop-shadow(0 0 30px rgba(255, 204, 0, 0.3));
     z-index: 2;
     animation: float 4s ease-in-out infinite;
 }
 
 .human-glow {
     position: absolute;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(255, 204, 0, 0.2) 0%, transparent 70%);
-    top: 50%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255, 204, 0, 0.15) 0%, transparent 70%);
+    bottom: 10%; /* 光晕跟在人物底部附近 */
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
     z-index: 1;
 }
 
 .dialog-box {
-    width: 90%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 204, 0, 0.3);
+    width: 85%;
+    background: rgba(15, 17, 21, 0.85);
+    border: 1px solid rgba(255, 204, 0, 0.4);
     border-radius: 12px;
     padding: 20px;
-    margin-top: 20px;
-    transform: translateY(20px);
+    margin-bottom: 20px;
+    transform: translateY(-20px);
     opacity: 0;
     transition: all 0.4s ease 0.3s;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 10;
 }
 
 .digital-human-container.active .dialog-box {
@@ -442,14 +488,16 @@ body {
 
 .dialog-box h3 {
     color: var(--accent-gold);
-    margin-bottom: 10px;
-    font-size: 1.2rem;
+    margin-bottom: 8px;
+    font-size: 1.25rem;
+    font-weight: 700;
 }
 
 .dialog-box p {
     color: var(--text-primary);
     line-height: 1.6;
-    font-size: 0.95rem;
+    font-size: 1rem;
+    margin: 0;
 }
 
 @keyframes float {
