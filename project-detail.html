@@ -533,58 +533,48 @@
         /* 设计 Tab 专用样式 */
         .design-grid {
             display: grid;
-            grid-template-columns: 0.8fr 1.2fr; /* 调整为非对称双栏布局 */
+            grid-template-columns: 28% 72%; /* 左侧表格占 28%，右侧占 72% */
             gap: 25px;
             padding: 0 25px 25px 25px;
         }
 
-        /* CAD 总图展示 (左侧屏) */
+        /* 设计进度面板 */
+        .design-progress-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 75vh;
+            min-height: 650px;
+            overflow: hidden;
+        }
+
+        /* 右侧视觉容器（包含 CAD 和 预览器） */
+        .design-visual-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 左右并排 */
+            gap: 25px;
+            height: 75vh;
+            min-height: 650px;
+        }
+
+        /* CAD 总图展示 (右侧左半部分) */
         .cad-view-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
             border-radius: var(--card-radius);
-            padding: 30px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             position: relative;
-            height: 75vh; /* 弹性高度 */
-            min-height: 650px; /* 保证最小可用性 */
+            height: 100%; /* 填满容器 */
         }
-
-        .cad-drawing-box {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-
-        }
-
-        .cad-drawing-box img {
-
-            object-fit: fill;
-            filter: brightness(1.1) contrast(1.1);
-        }
-
-        .cad-tag {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-family: 'Orbitron';
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 3px 10px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            letter-spacing: 1px;
-            z-index: 10;
-        }
-
-        /* 图纸预览器 (右侧屏) */
+        
+        /* 图纸预览器 (右侧右半部分) */
         .drawing-viewer-panel {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -592,8 +582,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 75vh; /* 弹性高度 */
-            min-height: 650px; /* 保证最小可用性 */
+            height: 100%; /* 填满容器 */
         }
 
         /* 总图号 Tab 栏 */
@@ -1427,8 +1416,150 @@
         <!-- 设计内容 -->
         <div id="designPane" class="tab-pane">
             <div class="design-grid">
-                <!-- 左侧：CAD 总图展示 -->
-                <div class="panel-column">
+                <!-- 左侧：设计进度 -->
+                <div class="design-progress-panel">
+                    <div class="section-title">设计进度</div>
+                    <div class="prod-table-container">
+                        <table class="prod-table">
+                            <thead>
+                                <tr>
+                                    <th>图号</th>
+                                    <th>图名</th>
+                                    <th>版本</th>
+                                    <th>设计</th>
+                                    <th>状态</th>
+                                    <th>进度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2820.0</td>
+                                    <td>总图</td>
+                                    <td>V1.0</td>
+                                    <td>张工</td>
+                                    <td><span style="color:#67c23a">已完成</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:100%;background:#67c23a;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.1</td>
+                                    <td>锅筒</td>
+                                    <td>V1.0</td>
+                                    <td>李工</td>
+                                    <td><span style="color:#67c23a">已完成</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:100%;background:#67c23a;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.2</td>
+                                    <td>水冷壁</td>
+                                    <td>V1.0</td>
+                                    <td>王工</td>
+                                    <td><span style="color:#e6a23c">进行中</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:85%;background:#e6a23c;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.3</td>
+                                    <td>过热器</td>
+                                    <td>V0.9</td>
+                                    <td>赵工</td>
+                                    <td><span style="color:#e6a23c">进行中</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:70%;background:#e6a23c;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.4</td>
+                                    <td>省煤器</td>
+                                    <td>V0.8</td>
+                                    <td>刘工</td>
+                                    <td><span style="color:#e6a23c">进行中</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:60%;background:#e6a23c;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.5</td>
+                                    <td>空气预热器</td>
+                                    <td>V0.5</td>
+                                    <td>陈工</td>
+                                    <td><span style="color:#409eff">设计中</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:40%;background:#409eff;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.6</td>
+                                    <td>燃烧系统</td>
+                                    <td>V0.3</td>
+                                    <td>杨工</td>
+                                    <td><span style="color:#409eff">设计中</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:20%;background:#409eff;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.7</td>
+                                    <td>钢架平台</td>
+                                    <td>V0.1</td>
+                                    <td>黄工</td>
+                                    <td><span style="color:#909399">未开始</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.8</td>
+                                    <td>炉墙保温</td>
+                                    <td>V0.1</td>
+                                    <td>周工</td>
+                                    <td><span style="color:#909399">未开始</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2820.9</td>
+                                    <td>管道系统</td>
+                                    <td>V0.1</td>
+                                    <td>吴工</td>
+                                    <td><span style="color:#909399">未开始</span></td>
+                                    <td>
+                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
+                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 右侧：CAD 与 预览器 -->
+                <div class="design-visual-container">
+                    <!-- CAD 总图展示 -->
                     <div class="cad-view-panel">
                         <div class="section-title">设计总图</div>
                         <div class="cad-drawing-box">
@@ -1439,10 +1570,8 @@
                             该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。通过全数字化的设计流程，实现了从图纸到制造的无缝对接。
                         </div>
                     </div>
-                </div>
 
-                <!-- 右侧：图纸预览器 -->
-                <div class="panel-column">
+                    <!-- 图纸预览器 -->
                     <div class="drawing-viewer-panel">
                         <div style="padding: 25px 25px 0 25px;">
                             <div class="section-title">图纸查看器</div>
