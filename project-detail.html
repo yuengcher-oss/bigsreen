@@ -837,11 +837,35 @@
             background: rgba(255, 255, 255, 0.05);
             color: rgba(255, 255, 255, 0.8);
             font-weight: normal;
+            white-space: nowrap; /* 防止表头换行 */
         }
 
         .prod-table td {
             background: rgba(0, 0, 0, 0.2);
             color: #fff;
+            white-space: nowrap; /* 防止内容换行 */
+        }
+
+        /* 状态标签样式 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 2px;
+            color: #fff;
+            font-size: 12px;
+            min-width: 60px;
+        }
+
+        .status-badge.delayed {
+            background-color: #ff4d4f; /* 红色 - 已延期 */
+        }
+
+        .status-badge.completed-delayed {
+            background-color: #67c23a; /* 绿色 - 延期完成 */
+        }
+
+        .status-badge.completed {
+            background-color: #67c23a; /* 绿色 - 已完成 */
         }
 
         /* 进度卡片样式 */
@@ -1423,134 +1447,262 @@
                         <table class="prod-table">
                             <thead>
                                 <tr>
+                                    <th>项目名称</th>
+                                    <th>生产令号</th>
                                     <th>图号</th>
-                                    <th>图名</th>
-                                    <th>版本</th>
-                                    <th>设计</th>
-                                    <th>状态</th>
-                                    <th>进度</th>
+                                    <th>名称</th>
+                                    <th>张数</th>
+                                    <th>A4</th>
+                                    <th>设计计划时间</th>
+                                    <th>设计状态</th>
+                                    <th>设计完成时间</th>
+                                    <th>完成人</th>
+                                    <th>工艺计划时间</th>
+                                    <th>工艺状态</th>
+                                    <th>工艺完成时间</th>
+                                    <th>完成人</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>2820.0</td>
-                                    <td>总图</td>
-                                    <td>V1.0</td>
-                                    <td>张工</td>
-                                    <td><span style="color:#67c23a">已完成</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:100%;background:#67c23a;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.109.0</td>
+                                    <td>水冷壁密封</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge delayed">已延期</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2026-06-26</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                                 <tr>
-                                    <td>2820.1</td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.603.0</td>
+                                    <td>生火排汽管道</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge delayed">已延期</span></td>
+                                    <td></td>
+                                    <td>褚宏豪</td>
+                                    <td>2026-06-25</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.901.0</td>
+                                    <td>锅炉铭牌</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-08-30</td>
+                                    <td><span class="status-badge delayed">已延期</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2026-06-29</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.902.0</td>
+                                    <td>备用件及专用工具</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-08-30</td>
+                                    <td><span class="status-badge delayed">已延期</span></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2026-03-25</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.001.0</td>
                                     <td>锅筒</td>
-                                    <td>V1.0</td>
-                                    <td>李工</td>
-                                    <td><span style="color:#67c23a">已完成</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:100%;background:#67c23a;"></div>
-                                        </div>
-                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-15</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-10-13</td>
+                                    <td>王红方</td>
+                                    <td>2025-07-25</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-01</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.2</td>
-                                    <td>水冷壁</td>
-                                    <td>V1.0</td>
-                                    <td>王工</td>
-                                    <td><span style="color:#e6a23c">进行中</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:85%;background:#e6a23c;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.002.0</td>
+                                    <td>内部装置</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-15</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-10-13</td>
+                                    <td>王红方</td>
+                                    <td>2025-09-05</td>
+                                    <td><span class="status-badge completed">已完成</span></td>
+                                    <td>2025-08-29</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.3</td>
-                                    <td>过热器</td>
-                                    <td>V0.9</td>
-                                    <td>赵工</td>
-                                    <td><span style="color:#e6a23c">进行中</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:70%;background:#e6a23c;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.003.0</td>
+                                    <td>锅筒预焊件</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-15</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-10-13</td>
+                                    <td>王红方</td>
+                                    <td>2025-07-25</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-01</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.4</td>
-                                    <td>省煤器</td>
-                                    <td>V0.8</td>
-                                    <td>刘工</td>
-                                    <td><span style="color:#e6a23c">进行中</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:60%;background:#e6a23c;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.004.0</td>
+                                    <td>锅筒吊挂</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-15</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-10-13</td>
+                                    <td>王红方</td>
+                                    <td>2025-07-25</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-01</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.5</td>
-                                    <td>空气预热器</td>
-                                    <td>V0.5</td>
-                                    <td>陈工</td>
-                                    <td><span style="color:#409eff">设计中</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:40%;background:#409eff;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.101.0</td>
+                                    <td>上部水冷壁</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-07-31</td>
+                                    <td>张俊波</td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge completed">已完成</span></td>
+                                    <td>2025-07-31</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.6</td>
-                                    <td>燃烧系统</td>
-                                    <td>V0.3</td>
-                                    <td>杨工</td>
-                                    <td><span style="color:#409eff">设计中</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:20%;background:#409eff;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.102.0</td>
+                                    <td>中部水冷壁</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-11-03</td>
+                                    <td>邵伟</td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge completed">已完成</span></td>
+                                    <td>2025-08-04</td>
+                                    <td>邵伟</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.7</td>
-                                    <td>钢架平台</td>
-                                    <td>V0.1</td>
-                                    <td>黄工</td>
-                                    <td><span style="color:#909399">未开始</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.103.0</td>
+                                    <td>下部水冷壁</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-21</td>
+                                    <td>安治林</td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-20</td>
+                                    <td>张俊波</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.8</td>
-                                    <td>炉墙保温</td>
-                                    <td>V0.1</td>
-                                    <td>周工</td>
-                                    <td><span style="color:#909399">未开始</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.104.0</td>
+                                    <td>水冷风室</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-15</td>
+                                    <td>张俊波</td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-09-03</td>
+                                    <td>胡玲</td>
                                 </tr>
                                 <tr>
-                                    <td>2820.9</td>
-                                    <td>管道系统</td>
-                                    <td>V0.1</td>
-                                    <td>吴工</td>
-                                    <td><span style="color:#909399">未开始</span></td>
-                                    <td>
-                                        <div class="progress-bar-bg" style="width:60px;margin:0 auto;">
-                                            <div class="progress-bar-fill" style="width:0%;background:#909399;"></div>
-                                        </div>
-                                    </td>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.105.0</td>
+                                    <td>下降管</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-09-03</td>
+                                    <td>陈柯宇</td>
+                                    <td>2025-09-05</td>
+                                    <td><span class="status-badge completed">已完成</span></td>
+                                    <td>2025-09-03</td>
+                                    <td>胡玲</td>
+                                </tr>
+                                <tr>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.106.0</td>
+                                    <td>顶部连接管</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-07</td>
+                                    <td>罗善俊</td>
+                                    <td>2025-08-30</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>新疆慧能</td>
+                                    <td>1160012/1160013</td>
+                                    <td>2829.107.0</td>
+                                    <td>水冷分离器</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>2025-07-30</td>
+                                    <td><span class="status-badge completed-delayed">延期完成</span></td>
+                                    <td>2025-08-30</td>
+                                    <td>陈柯宇</td>
+                                    <td>2025-08-10</td>
+                                    <td><span class="status-badge completed">已完成</span></td>
+                                    <td>2025-08-04</td>
+                                    <td>张俊波</td>
                                 </tr>
                             </tbody>
                         </table>
