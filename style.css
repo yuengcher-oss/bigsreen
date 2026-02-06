@@ -375,11 +375,11 @@ body {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-left: 20px;
-    margin-top: 10px;
     letter-spacing: 1px;
     box-shadow: 0 0 15px rgba(255, 204, 0, 0.1);
-    position: relative;
+    position: absolute;
+    right: 0;
+    top: 10px;
     overflow: hidden;
 }
 
@@ -441,17 +441,14 @@ body {
     flex: 1; /* 占据剩余空间 */
     display: flex;
     justify-content: center;
-    align-items: flex-end; /* 人物贴底 */
     position: relative;
     margin-top: auto;
 }
 
 .avatar-img {
     max-width: 100%;
-    height: 90%; /* 稍微缩小一点以适应容器 */
+    height: 80%; /* 稍微缩小一点以适应容器 */
     object-fit: contain;
-    filter: drop-shadow(0 0 30px rgba(255, 204, 0, 0.3));
-    z-index: 2;
     animation: float 4s ease-in-out infinite;
 }
 
