@@ -493,6 +493,175 @@
             object-fit: cover; /* 历程图片建议用 cover 填充 */
         }
 
+        /* Tab 切换逻辑样式 */
+        .tab-pane {
+            display: none;
+            height: 100%;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* 设计 Tab 专用样式 */
+        .design-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            height: 100%;
+            gap: 20px;
+            padding: 0 20px 20px 20px;
+        }
+
+        /* CAD 总图展示 (左侧屏) */
+        .cad-view-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+        }
+
+        .cad-drawing-box {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(230, 0, 18, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .cad-drawing-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: brightness(1.1) contrast(1.1) drop-shadow(0 0 10px rgba(230, 0, 18, 0.2));
+        }
+
+        .cad-tag {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-family: 'Orbitron';
+            font-size: 12px;
+            color: var(--primary-red);
+            background: rgba(230, 0, 18, 0.1);
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(230, 0, 18, 0.3);
+            z-index: 10;
+        }
+
+        /* 图纸预览器 (中间屏) */
+        .drawing-viewer-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 总图号 Tab 栏 */
+        .viewer-header-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 10px;
+        }
+
+        .viewer-tab {
+            padding: 15px 25px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-family: var(--font-digit);
+        }
+
+        .viewer-tab:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .viewer-tab.active {
+            color: var(--primary-red);
+            border-bottom-color: var(--primary-red);
+            background: rgba(230, 0, 18, 0.05);
+        }
+
+        /* 下部主体：Sidebar + 内容区 */
+        .viewer-body {
+            flex: 1;
+            display: flex;
+            min-height: 0;
+        }
+
+        .viewer-sidebar {
+            width: 280px;
+            background: rgba(0, 0, 0, 0.2);
+            border-right: 1px solid var(--glass-border);
+            overflow-y: auto;
+            padding: 15px 0;
+        }
+
+        .sidebar-item {
+            padding: 12px 25px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        .sidebar-item.active {
+            background: rgba(230, 0, 18, 0.08);
+            color: #fff;
+            border-left-color: var(--primary-red);
+        }
+
+        .viewer-display {
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .viewer-display img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .viewer-display::after {
+            content: 'PREVIEW MODE';
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        /* 右侧留空屏 */
+        .empty-panel {
+            background: transparent;
+        }
     </style>
 </head>
 <body>
@@ -524,141 +693,184 @@
 
     <div class="content-container">
         <!-- 概要内容 -->
-        <div class="overview-grid">
-            
-            <!-- 左侧：项目背景 (第一屏 1440px) -->
-            <div class="panel-column">
-                <div class="detail-card">
-                    <div>
-                        <div class="section-title">项目背景</div>
-                        <div class="project-bg-info">
-                            <p>客户名称：新疆慧能煤清洁高效利用有限公司</p>
-                            <p>项目地址：新疆哈密涂毛湖煤矿区</p>
+        <div id="overviewPane" class="tab-pane active">
+            <div class="overview-grid">
+                
+                <!-- 左侧：项目背景 (第一屏 1440px) -->
+                <div class="panel-column">
+                    <div class="detail-card">
+                        <div>
+                            <div class="section-title">项目背景</div>
+                            <div class="project-bg-info">
+                                <p>客户名称：新疆慧能煤清洁高效利用有限公司</p>
+                                <p>项目地址：新疆哈密涂毛湖煤矿区</p>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="img-grid">
-                        <div class="img-box">
-                            <img id="img_main" src="https://minio-api.cgboiler.com/form-prod/%E5%9B%BE%E7%89%871_1766738777366.png" class="real-img" style="display: block;">
+                        <div class="img-grid">
+                            <div class="img-box">
+                                <img id="img_main" src="https://minio-api.cgboiler.com/form-prod/%E5%9B%BE%E7%89%871_1766738777366.png" class="real-img" style="display: block;">
+                            </div>
+                            <div class="img-box">
+                                <img id="img_secondary" src="https://minio-api.cgboiler.com/form-prod/%E5%9B%BE%E7%89%872_1766738831038.png" class="real-img" style="display: block;">
+                            </div>
                         </div>
-                        <div class="img-box">
-                            <img id="img_secondary" src="https://minio-api.cgboiler.com/form-prod/%E5%9B%BE%E7%89%872_1766738831038.png" class="real-img" style="display: block;">
-                        </div>
-                    </div>
 
-                    <div class="award-list" style="font-size: 22px; color: var(--text-secondary); line-height: 1.6;">
-                        <p style="color: var(--primary-red); font-weight: bold; margin-bottom: 10px;">两项国家级示范任务：</p>
-                        <p>1. 分质分级清洁高效利用技术装备产业化示范</p>
-                        <p>2. 粉煤热解直溢分质置工业化示范</p>
-                        <p style="margin-top: 20px; color: #fff; border-top: 1px solid var(--glass-border); padding-top: 15px;">是国内唯一入选的煤炭分质分级利用领域技术</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 中间：供应产品 (第二屏 1440px) -->
-            <div class="panel-column">
-                <div class="detail-card">
-                    <div>
-                        <div class="section-title">供应产品</div>
-                        <div class="product-name-highlight">4台高温固体颗粒余热锅炉，2台循环流化床热风锅炉</div>
-                    </div>
-
-                    <div class="metrics-card">
-                        <div class="metric-item">
-                            <div class="metric-val">950,000</div>
-                            <div class="metric-label">热烟气产出 (Nm³/h)</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-val">850</div>
-                            <div class="metric-label">热烟气温度 (°C)</div>
-                        </div>
-                        <div class="metric-item">
-                            <div class="metric-val">160</div>
-                            <div class="metric-label">高温高压蒸汽 (t)</div>
-                        </div>
-                    </div>
-
-                    <div class="process-desc">
-                        高温固体颗粒余热回收：通过回收工艺过程中产生的高温固体颗粒热量，最大化热能综合利用效率。完全满足厂区工艺用气需求。
-                    </div>
-
-                    <div class="diagram-container">
-                        <div class="diagram-main">
-                            <img id="img_diagram" src="https://minio-api.cgboiler.com/form-test/1770284658201_download.jpg" class="real-img" style="display: block;">
-                        </div>
-                        <div class="certificate-box">
-                            <img id="img_cert" src="https://minio-api.cgboiler.com/abi/A%E5%85%AC%E5%8F%B8%E4%BB%8B%E7%BB%8D/A010%E8%AF%81%E4%B9%A6/%E9%AB%98%E6%B8%A9%E5%9B%BA%E4%BD%93%E6%95%A3%E6%96%99%E4%BD%99%E7%83%AD%E7%9B%B4%E6%8E%A5%E5%9B%9E%E6%94%B6%E6%8A%80%E6%9C%AF%E5%BC%80%E5%8F%91%E4%B8%8E%E5%BA%94%E7%94%A8-%E5%86%B6%E9%87%91%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E4%BA%8C%E7%AD%89%E5%A5%96(1).jpg" class="real-img" style="display: block;">
+                        <div class="award-list" style="font-size: 22px; color: var(--text-secondary); line-height: 1.6;">
+                            <p style="color: var(--primary-red); font-weight: bold; margin-bottom: 10px;">两项国家级示范任务：</p>
+                            <p>1. 分质分级清洁高效利用技术装备产业化示范</p>
+                            <p>2. 粉煤热解直溢分质置工业化示范</p>
+                            <p style="margin-top: 20px; color: #fff; border-top: 1px solid var(--glass-border); padding-top: 15px;">是国内唯一入选的煤炭分质分级利用领域技术</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- 右侧：项目历程 (第三屏 1440px) -->
-            <div class="panel-column">
-                <div class="detail-card">
-                    <div class="section-title">项目历程</div>
-                    <div class="timeline-box">
-                        <p style="font-size: 22px; line-height: 1.8; color: var(--text-secondary); margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 10px;">
-                            新疆慧能热风炉项目于2024年1月中旬启动生产，历经设备制造、发运及现场安装，于2月中旬顺利完成。
-                        </p>
+                <!-- 中间：供应产品 (第二屏 1440px) -->
+                <div class="panel-column">
+                    <div class="detail-card">
+                        <div>
+                            <div class="section-title">供应产品</div>
+                            <div class="product-name-highlight">4台高温固体颗粒余热锅炉，2台循环流化床热风锅炉</div>
+                        </div>
 
-                        <!-- 时间节点 1 -->
-                        <div class="timeline-section">
-                            <div class="timeline-title">2024-01-15</div>
-                            <div class="timeline-content">
-                                首批工装构件下料（旋风分离器）和308（下部灰斗部）生产进度启动。
+                        <div class="metrics-card">
+                            <div class="metric-item">
+                                <div class="metric-val">950,000</div>
+                                <div class="metric-label">热烟气产出 (Nm³/h)</div>
                             </div>
-                            <div class="gallery-container">
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
-                                </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
-                                </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
-                                </div>
+                            <div class="metric-item">
+                                <div class="metric-val">850</div>
+                                <div class="metric-label">热烟气温度 (°C)</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-val">160</div>
+                                <div class="metric-label">高温高压蒸汽 (t)</div>
                             </div>
                         </div>
 
-                        <!-- 时间节点 2 -->
-                        <div class="timeline-section">
-                            <div class="timeline-title">2024-01-25</div>
-                            <div class="timeline-content">
-                                完成部件焊接作业，检测各处无死角、无夹渣等缺陷。
+                        <div class="process-desc">
+                            高温固体颗粒余热回收：通过回收工艺过程中产生的高温固体颗粒热量，最大化热能综合利用效率。完全满足厂区工艺用气需求。
+                        </div>
+
+                        <div class="diagram-container">
+                            <div class="diagram-main">
+                                <img id="img_diagram" src="https://minio-api.cgboiler.com/form-test/1770284658201_download.jpg" class="real-img" style="display: block;">
                             </div>
-                            <div class="gallery-container">
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
-                                </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
-                                </div>
+                            <div class="certificate-box">
+                                <img id="img_cert" src="https://minio-api.cgboiler.com/abi/A%E5%85%AC%E5%8F%B8%E4%BB%8B%E7%BB%8D/A010%E8%AF%81%E4%B9%A6/%E9%AB%98%E6%B8%A9%E5%9B%BA%E4%BD%93%E6%95%A3%E6%96%99%E4%BD%99%E7%83%AD%E7%9B%B4%E6%8E%A5%E5%9B%9E%E6%94%B6%E6%8A%80%E6%9C%AF%E5%BC%80%E5%8F%91%E4%B8%8E%E5%BA%94%E7%94%A8-%E5%86%B6%E9%87%91%E7%A7%91%E5%AD%A6%E6%8A%80%E6%9C%AF%E4%BA%8C%E7%AD%89%E5%A5%96(1).jpg" class="real-img" style="display: block;">
                             </div>
                         </div>
-                        
-                        <!-- 时间节点 3 -->
-                        <div class="timeline-section">
-                            <div class="timeline-title">2024-02-10</div>
-                            <div class="timeline-content">
-                                全部完成发运工作，应对突发状况预案。完成最终验收和客户交付。
+                    </div>
+                </div>
+
+                <!-- 右侧：项目历程 (第三屏 1440px) -->
+                <div class="panel-column">
+                    <div class="detail-card">
+                        <div class="section-title">项目历程</div>
+                        <div class="timeline-box">
+                            <p style="font-size: 22px; line-height: 1.8; color: var(--text-secondary); margin-bottom: 40px; background: rgba(255,255,255,0.02); padding: 20px; border-radius: 10px;">
+                                新疆慧能热风炉项目于2024年1月中旬启动生产，历经设备制造、发运及现场安装，于2月中旬顺利完成。
+                            </p>
+
+                            <!-- 时间节点 1 -->
+                            <div class="timeline-section">
+                                <div class="timeline-title">2024-01-15</div>
+                                <div class="timeline-content">
+                                    首批工装构件下料（旋风分离器）和308（下部灰斗部）生产进度启动。
+                                </div>
+                                <div class="gallery-container">
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="gallery-container">
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
+
+                            <!-- 时间节点 2 -->
+                            <div class="timeline-section">
+                                <div class="timeline-title">2024-01-25</div>
+                                <div class="timeline-content">
+                                    完成部件焊接作业，检测各处无死角、无夹渣等缺陷。
                                 </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
+                                <div class="gallery-container">
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
                                 </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
+                            </div>
+                            
+                            <!-- 时间节点 3 -->
+                            <div class="timeline-section">
+                                <div class="timeline-title">2024-02-10</div>
+                                <div class="timeline-content">
+                                    全部完成发运工作，应对突发状况预案。完成最终验收和客户交付。
                                 </div>
-                                <div class="gallery-item">
-                                    <div class="placeholder-icon">📸</div>
+                                <div class="gallery-container">
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
+                                    <div class="gallery-item">
+                                        <div class="placeholder-icon">📸</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设计内容 -->
+        <div id="designPane" class="tab-pane">
+            <div class="design-grid">
+                <!-- 左侧屏：CAD 总图 -->
+                <div class="panel-column">
+                    <div class="cad-view-panel">
+                        <div class="section-title">设计总图</div>
+                        <div class="cad-drawing-box">
+                            <div class="cad-tag">CAD / 3D DRAWING</div>
+                            <img src="https://minio-api.cgboiler.com/form-test/1770284658201_download.jpg" alt="CAD General Drawing">
+                        </div>
+                        <div class="process-desc">
+                            该系统采用数字化三维建模设计，确保了锅炉受热面布置的最优化与现场安装的精确匹配。
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中间屏：图纸预览器 -->
+                <div class="panel-column">
+                    <div class="drawing-viewer-panel">
+                        <div class="viewer-header-tabs" id="generalDrawingTabs">
+                            <!-- 动态生成 1.0 - 9.0 -->
+                        </div>
+                        <div class="viewer-body">
+                            <div class="viewer-sidebar" id="subDrawingSidebar">
+                                <!-- 动态生成分图号 -->
+                            </div>
+                            <div class="viewer-display">
+                                <img id="drawingPreviewImg" src="https://minio-api.cgboiler.com/form-test/%E5%9B%BE%E7%89%871.png" alt="Drawing Preview">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧屏：留空 -->
+                <div class="panel-column">
+                    <div class="empty-panel"></div>
                 </div>
             </div>
         </div>
@@ -695,17 +907,77 @@
                 }
             });
             
-            // 简单的 Tab 切换交互（目前只有一个 Tab 内容，后续可扩展）
+            // 简单的 Tab 切换交互
             const tabs = document.querySelectorAll('.tab-item');
+            const tabPanes = {
+                '概要': document.getElementById('overviewPane'),
+                '设计': document.getElementById('designPane')
+            };
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', () => {
+                    const tabName = tab.textContent.trim();
+                    if (!tabPanes[tabName]) return; // 暂时只处理概要和设计
+
                     tabs.forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    // 这里可以添加切换内容的逻辑
-                    // 比如: document.querySelectorAll('.tab-pane').forEach(p => p.style.display='none');
-                    // document.getElementById(tab.dataset.target).style.display='block';
+
+                    // 切换面板
+                    Object.values(tabPanes).forEach(pane => {
+                        if (pane) pane.classList.remove('active');
+                    });
+                    tabPanes[tabName].classList.add('active');
+
+                    // 如果切换到设计，初始化预览器
+                    if (tabName === '设计') {
+                        initDrawingViewer();
+                    }
                 });
             });
+
+            // 初始化图纸预览器
+            function initDrawingViewer() {
+                const generalTabsContainer = document.getElementById('generalDrawingTabs');
+                const sidebarContainer = document.getElementById('subDrawingSidebar');
+                const previewImg = document.getElementById('drawingPreviewImg');
+
+                if (generalTabsContainer.children.length > 0) return; // 防止重复加载
+
+                // 1. 生成总图号 Tab (1.0 - 9.0)
+                for (let i = 1; i <= 9; i++) {
+                    const tab = document.createElement('div');
+                    tab.className = `viewer-tab ${i === 1 ? 'active' : ''}`;
+                    tab.textContent = `${i}.0`;
+                    tab.onclick = () => {
+                        document.querySelectorAll('.viewer-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        updateSidebar(i);
+                    };
+                    generalTabsContainer.appendChild(tab);
+                }
+
+                // 2. 生成分图号 Sidebar
+                function updateSidebar(generalNum) {
+                    sidebarContainer.innerHTML = '';
+                    const subDrawingCount = 12; // 模拟每个总图下有12张分图
+                    for (let j = 1; j <= subDrawingCount; j++) {
+                        const item = document.createElement('div');
+                        item.className = `sidebar-item ${j === 1 ? 'active' : ''}`;
+                        const subCode = `2830.${generalNum}0${j}.${j + 10}-9`;
+                        item.textContent = subCode;
+                        item.onclick = () => {
+                            document.querySelectorAll('.sidebar-item').forEach(si => si.classList.remove('active'));
+                            item.classList.add('active');
+                            // 点击切换图片
+                            previewImg.src = `https://minio-api.cgboiler.com/form-test/%E5%9B%BE%E7%BA%B81.png?t=${Date.now()}`;
+                        };
+                        sidebarContainer.appendChild(item);
+                    }
+                }
+
+                // 默认初始化第一组
+                updateSidebar(1);
+            }
         };
     </script>
 </body>
